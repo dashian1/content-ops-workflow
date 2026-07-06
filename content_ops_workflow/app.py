@@ -143,6 +143,8 @@ def require_basic_auth():
 
 
 def form_case(file_path: str) -> UploadedCase:
+    if request.is_json:
+        return json_case(request.get_json(silent=True) or {})
     return UploadedCase(
         title=request.form.get("title", "").strip(),
         platform=request.form.get("platform", "").strip(),

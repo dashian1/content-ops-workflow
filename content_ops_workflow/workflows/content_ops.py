@@ -158,6 +158,13 @@ def analyze_prompt(case: UploadedCase, product_library: str) -> str:
 
 这一步不是简单总结内容，而是拆出可复用的运营资产。必须按下面字段输出 Markdown。
 
+【硬性约束｜防跑偏】
+1. 分析阶段只拆解“原爆款素材”，不要生成本品脚本，不要把素材改写成产品广告。
+2. 必须保留原素材的 source_prototype_lock：职业身份、生活场景、情绪张力、呈现形式、植入方式。
+3. 产品库只允许在“## 10. 产品承接”里用于判断可承接产品，不能覆盖原素材话题、受众、结构和表达。
+4. 如果原素材是空姐/晚班/超长待机/职场女性/vlog/高蛋白拿铁，就必须围绕这个原型拆解；不得改写成灵芝茶避坑、掉发、配料表、测评打假等其他原型。
+5. 遇到信息不足，标注“信息不足”，不要脑补具体数据、账号背景和视频画面。
+
 【素材信息】
 - 标题: {case.title or "未填写"}
 - 平台: {case.platform or "未填写"}
@@ -180,6 +187,14 @@ def analyze_prompt(case: UploadedCase, product_library: str) -> str:
 请输出:
 
 # 爆款内容分析
+
+## 0. Source Prototype Lock
+- 原始人物/身份:
+- 原始场景:
+- 原始情绪/冲突:
+- 原始呈现形式:
+- 原始产品植入方式:
+- 禁止迁移成:
 
 ## 1. 基础判断
 - 是否值得拆:
@@ -507,6 +522,13 @@ def candidate_prompt(case: UploadedCase, analysis: str, product_match: str, scri
 loop_rows 每行必须包含:
 脚本, 镜头, 状态, 时长(秒), 场景, 景别, 运镜, 画面, 动作神情, 口播稿, 字幕, 分镜图, 分镜图链接, 视频链接
 
+【候选生成硬约束】
+1. 默认保留爆款分析里的 Source Prototype Lock，不要擅自替换职业身份、场景和内容外壳。
+2. 如果原型是空姐晚班 vlog，候选可以换风格，但人物仍应是空姐/民航人/航班晚班场景；不得默认迁移成办公室、北漂、普通白领、测评或避坑。
+3. 产品植入必须服务于原型场景：晚班、超长待机、职场女性、自律补给、出勤前后，而不是强行进入养生科普。
+4. 只有 script_goal 明确要求“迁移到其他职业/人群”时，才允许换职业外壳。
+5. loop_rows 的口播稿必须能连成一条完整口播，不允许只写画面说明。
+
 候选风格:
 {", ".join(styles)}
 
@@ -570,6 +592,31 @@ def clean_json_text(text: str) -> str:
     clean = text.strip()
     if clean.startswith("```"):
         clean = clean.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    start = clean.find("{")
+    if start > 0:
+        clean = clean[start:]
+    if clean.startswith("{"):
+        depth = 0
+        in_string = False
+        escaped = False
+        for index, char in enumerate(clean):
+            if escaped:
+                escaped = False
+                continue
+            if char == "\\":
+                escaped = True
+                continue
+            if char == '"':
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return clean[: index + 1]
     return clean
 
 
