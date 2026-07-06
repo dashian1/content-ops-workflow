@@ -35,6 +35,7 @@ class Settings:
     feishu_script_table: str
     feishu_loop_table: str
     feishu_review_table: str
+    notes_cli: str
 
 
 def load_runtime_config() -> dict:
@@ -63,6 +64,7 @@ def save_runtime_config(data: dict) -> None:
         "feishu_script_table",
         "feishu_loop_table",
         "feishu_review_table",
+        "notes_cli",
     }
     clean = {key: str(value).strip() for key, value in data.items() if key in allowed}
     with open(RUNTIME_CONFIG_PATH, "w", encoding="utf-8") as f:
@@ -100,6 +102,7 @@ def load_settings() -> Settings:
         feishu_script_table=cfg(data, "FEISHU_SCRIPT_TABLE", "feishu_script_table", ""),
         feishu_loop_table=cfg(data, "FEISHU_LOOP_TABLE", "feishu_loop_table", ""),
         feishu_review_table=cfg(data, "FEISHU_REVIEW_TABLE", "feishu_review_table", ""),
+        notes_cli=cfg(data, "NOTES_CLI", "notes_cli", ""),
     )
 
 

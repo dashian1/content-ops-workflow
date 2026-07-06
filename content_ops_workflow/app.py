@@ -12,7 +12,7 @@ from flask import Flask, Response, jsonify, render_template, request
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from content_ops_workflow import feishu, obsidian
+from content_ops_workflow import feishu, notes_cli, obsidian
 from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
@@ -62,6 +62,7 @@ def create_app() -> Flask:
                 "ok": True,
                 "api_configured": bool(active.api_key),
                 "obsidian": obsidian.plugin_status(),
+                "notes_cli": notes_cli.status(),
                 "feishu": feishu.status(),
                 "external_loops_dir": active.external_loops_dir,
                 "product_kb_dir": active.product_kb_dir,
@@ -97,6 +98,10 @@ def create_app() -> Flask:
     def obsidian_status():
         return jsonify(obsidian.plugin_status())
 
+    @app.route("/api/notes-cli/status")
+    def notes_cli_status():
+        return jsonify(notes_cli.status())
+
     @app.route("/api/feishu/status")
     def feishu_status():
         return jsonify(feishu.status())
@@ -107,7 +112,16 @@ def create_app() -> Flask:
         vault_path = data.get("vault_path", "")
         if not vault_path:
             return jsonify({"ok": False, "error": "缺少 vault_path"})
-        return jsonify({"ok": True, "open_uri": obsidian.open_note(vault_path)})
+        return jsonify(notes_cli.open_note(vault_path))
+
+    @app.route("/api/notes-cli/open-vault", methods=["POST"])
+    def notes_cli_open_vault():
+        return jsonify(notes_cli.open_vault())
+
+    @app.route("/api/notes-cli/reveal", methods=["POST"])
+    def notes_cli_reveal():
+        data = request.json or {}
+        return jsonify(notes_cli.reveal(data.get("vault_path", "")))
 
     @app.route("/api/analyze", methods=["POST"])
     def analyze():
@@ -261,12 +275,14 @@ def reload_settings() -> None:
     import content_ops_workflow.config as config_module
     import content_ops_workflow.feishu as feishu_module
     import content_ops_workflow.llm as llm_module
+    import content_ops_workflow.notes_cli as notes_cli_module
     import content_ops_workflow.obsidian as obsidian_module
     import content_ops_workflow.workflows.content_ops as workflow_module
 
     config_module.SETTINGS = new_settings
     feishu_module.SETTINGS = new_settings
     llm_module.SETTINGS = new_settings
+    notes_cli_module.SETTINGS = new_settings
     obsidian_module.SETTINGS = new_settings
     workflow_module.SETTINGS = new_settings
 
