@@ -692,7 +692,20 @@ def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, str]
     xlsx_path = os.path.join(today_dir, f"{base}_loop.xlsx")
     write_loop_csv(csv_path, rows)
     write_loop_xlsx(xlsx_path, rows)
-    return {"csv": csv_path, "xlsx": xlsx_path}
+    external = sync_loop_files(csv_path, xlsx_path)
+    return {"csv": csv_path, "xlsx": xlsx_path, **external}
+
+
+def sync_loop_files(csv_path: str, xlsx_path: str) -> dict[str, str]:
+    handoff_dir = os.path.join(SETTINGS.external_loops_dir, "content_ops_handoff")
+    os.makedirs(handoff_dir, exist_ok=True)
+    result: dict[str, str] = {}
+    for label, path in (("external_csv", csv_path), ("external_xlsx", xlsx_path)):
+        if path and os.path.exists(path):
+            target = os.path.join(handoff_dir, os.path.basename(path))
+            shutil.copyfile(path, target)
+            result[label] = target
+    return result
 
 
 def feedback_prompt(data: dict[str, Any]) -> str:
@@ -783,6 +796,7 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
     xlsx_path = os.path.join(today_dir, f"{base}_loop.xlsx")
     write_loop_csv(csv_path, rows)
     write_loop_xlsx(xlsx_path, rows)
+    external = sync_loop_files(csv_path, xlsx_path)
     loop_vault_path = f"08_loop生产/{os.path.basename(csv_path)}"
     loop_local_path = os.path.join(SETTINGS.obsidian_dir, "08_loop生产", os.path.basename(csv_path))
     os.makedirs(os.path.dirname(loop_local_path), exist_ok=True)
@@ -797,6 +811,7 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
         "loop_local_path": loop_local_path,
         "csv": csv_path,
         "xlsx": xlsx_path,
+        **external,
     }
 
 

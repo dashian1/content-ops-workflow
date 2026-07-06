@@ -12,19 +12,20 @@ from flask import Flask, Response, jsonify, render_template, request
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from content_ops_workflow import obsidian
+from content_ops_workflow import feishu, obsidian
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
     UploadedCase,
     analyze_case,
     deposit_to_obsidian,
     enrich_case_with_video,
-    generate_script,
     generate_candidates,
+    generate_script,
     loop_from_candidate,
     match_product,
-    record_feedback,
     read_product_library,
+    record_feedback,
+    save_candidates,
     save_script_and_loop,
     save_upload,
 )
@@ -44,12 +45,26 @@ def create_app() -> Flask:
             obsidian_rest_url=SETTINGS.obsidian_rest_url,
             obsidian_vault_name=SETTINGS.obsidian_vault_name,
             product_kb_dir=SETTINGS.product_kb_dir,
+            external_loops_dir=SETTINGS.external_loops_dir,
             api_configured=bool(SETTINGS.api_key),
         )
 
     @app.route("/health")
     def health():
         return jsonify({"ok": True})
+
+    @app.route("/api/cloud/status")
+    def cloud_status():
+        return jsonify(
+            {
+                "ok": True,
+                "api_configured": bool(SETTINGS.api_key),
+                "obsidian": obsidian.plugin_status(),
+                "feishu": feishu.status(),
+                "external_loops_dir": SETTINGS.external_loops_dir,
+                "product_kb_dir": SETTINGS.product_kb_dir,
+            }
+        )
 
     @app.route("/api/product-library")
     def product_library():
@@ -58,6 +73,10 @@ def create_app() -> Flask:
     @app.route("/api/obsidian/status")
     def obsidian_status():
         return jsonify(obsidian.plugin_status())
+
+    @app.route("/api/feishu/status")
+    def feishu_status():
+        return jsonify(feishu.status())
 
     @app.route("/api/obsidian/open", methods=["POST"])
     def obsidian_open():
@@ -75,6 +94,15 @@ def create_app() -> Flask:
         analysis = analyze_case(case)
         product_match = match_product(case, analysis)
         paths = deposit_to_obsidian(case, analysis, product_match)
+        feishu_result = feishu.push_payload(
+            "analysis",
+            {
+                "case": case_to_dict(case),
+                "analysis": analysis,
+                "product_match": product_match,
+                "obsidian_paths": paths,
+            },
+        )
         video_package = None
         if case.video_package:
             video_package = {
@@ -86,24 +114,30 @@ def create_app() -> Flask:
                 "frame_count": case.video_package.frame_count,
                 "extracted_count": case.video_package.extracted_count,
             }
-        return jsonify({"ok": True, "analysis": analysis, "product_match": product_match, "paths": paths, "file_path": file_path, "video_package": video_package})
+        return jsonify(
+            {
+                "ok": True,
+                "analysis": analysis,
+                "product_match": product_match,
+                "paths": paths,
+                "feishu": feishu_result,
+                "file_path": file_path,
+                "video_package": video_package,
+            }
+        )
 
     @app.route("/api/generate-script", methods=["POST"])
     def script():
         data = request.json or {}
-        case = UploadedCase(
-            title=data.get("title", ""),
-            platform=data.get("platform", ""),
-            url=data.get("url", ""),
-            metrics=data.get("metrics", ""),
-            reason=data.get("reason", ""),
-            transcript=data.get("transcript", ""),
-            notes=data.get("notes", ""),
-            file_path=data.get("file_path", ""),
-        )
+        case = json_case(data)
         script_md = generate_script(case, data.get("analysis", ""), data.get("script_goal", ""), data.get("product_match", ""))
         paths = save_script_and_loop(case.title or "内容运营脚本", script_md)
-        return jsonify({"ok": True, "script": script_md, "paths": paths})
+        feishu_result = feishu.push_payload(
+            "script",
+            {"case": case_to_dict(case), "script": script_md, "paths": paths},
+            [paths.get("csv", ""), paths.get("xlsx", "")],
+        )
+        return jsonify({"ok": True, "script": script_md, "paths": paths, "feishu": feishu_result})
 
     @app.route("/api/candidates", methods=["POST"])
     def candidates():
@@ -111,10 +145,13 @@ def create_app() -> Flask:
         case = json_case(data)
         styles = data.get("styles") or None
         candidates_data = generate_candidates(case, data.get("analysis", ""), data.get("product_match", ""), data.get("script_goal", ""), styles)
-        from content_ops_workflow.workflows.content_ops import save_candidates
-
         paths = save_candidates(case.title or "内容运营候选池", candidates_data)
-        return jsonify({"ok": True, "candidates": candidates_data, "paths": paths})
+        feishu_result = feishu.push_payload(
+            "script",
+            {"case": case_to_dict(case), "candidates": candidates_data, "paths": paths},
+            [paths.get("json", ""), paths.get("markdown", "")],
+        )
+        return jsonify({"ok": True, "candidates": candidates_data, "paths": paths, "feishu": feishu_result})
 
     @app.route("/api/candidate-loop", methods=["POST"])
     def candidate_loop():
@@ -122,13 +159,25 @@ def create_app() -> Flask:
         candidate = data.get("candidate") or {}
         title = data.get("title") or candidate.get("title") or "候选脚本"
         paths = loop_from_candidate(candidate, title)
-        return jsonify({"ok": True, "paths": paths})
+        feishu_result = feishu.push_payload(
+            "loop",
+            {"title": title, "candidate": candidate, "paths": paths},
+            [paths.get("csv", ""), paths.get("xlsx", "")],
+        )
+        return jsonify({"ok": True, "paths": paths, "feishu": feishu_result})
 
     @app.route("/api/feedback", methods=["POST"])
     def feedback():
         data = request.json or {}
         paths = record_feedback(data)
-        return jsonify({"ok": True, "paths": paths, "review": paths.get("review", "")})
+        feishu_result = feishu.push_payload("review", {"feedback": data, "review": paths.get("review", ""), "paths": paths})
+        return jsonify({"ok": True, "paths": paths, "review": paths.get("review", ""), "feishu": feishu_result})
+
+    @app.route("/api/feishu/push", methods=["POST"])
+    def feishu_push():
+        data = request.json or {}
+        result = feishu.push_payload(data.get("kind", "manual"), data.get("payload") or data, data.get("attachments") or [])
+        return jsonify(result)
 
     return app
 
@@ -170,6 +219,19 @@ def json_case(data: dict) -> UploadedCase:
     )
 
 
+def case_to_dict(case: UploadedCase) -> dict:
+    return {
+        "title": case.title,
+        "platform": case.platform,
+        "url": case.url,
+        "metrics": case.metrics,
+        "reason": case.reason,
+        "transcript": case.transcript,
+        "notes": case.notes,
+        "file_path": case.file_path,
+    }
+
+
 app = create_app()
 
 
@@ -179,9 +241,10 @@ def open_browser() -> None:
 
 
 if __name__ == "__main__":
-    print("内容运营 Workflow")
+    print("内容运营云台")
     print(f"Obsidian: {SETTINGS.obsidian_dir}")
     print(f"产品库: {SETTINGS.product_kb_dir}")
+    print(f"Loops: {SETTINGS.external_loops_dir}")
     if os.environ.get("NO_BROWSER") != "1":
         Thread(target=open_browser, daemon=True).start()
     app.run(host=SETTINGS.host, port=SETTINGS.port, debug=False)
