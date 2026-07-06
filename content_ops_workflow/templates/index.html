@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>内容运营 Workflow</title>
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --panel: #ffffff;
+      --text: #202124;
+      --muted: #69707a;
+      --line: #dfe3e8;
+      --primary: #1f6feb;
+      --primary-dark: #185abc;
+      --soft: #eef4ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    h1 { font-size: 18px; margin: 0; }
+    .meta { color: var(--muted); font-size: 13px; }
+    main {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 16px;
+      padding: 16px;
+      min-height: calc(100vh - 58px);
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .stack { display: grid; gap: 12px; align-content: start; }
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 11px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 6px;
+      padding: 10px 13px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    button.primary:hover { background: var(--primary-dark); }
+    button:disabled { opacity: .6; cursor: wait; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hint {
+      padding: 10px;
+      border-radius: 6px;
+      background: var(--soft);
+      color: #24436f;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 260px;
+      margin: 0;
+      line-height: 1.6;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tabs button.active { background: #111827; color: white; }
+    .output { display: none; }
+    .output.active { display: block; }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>内容运营 Workflow</h1>
+    <div class="meta">Obsidian：{{ obsidian_dir }} ｜ 产品库：{{ product_kb_dir }}</div>
+  </header>
+  <main>
+    <section class="stack">
+      <div class="panel stack">
+        <div class="hint">
+          第一步由人选择爆款，不自动抓取。上传视频/截图或填写链接后，系统按运营维度拆解，再沉淀到 Obsidian。
+        </div>
+        <div class="row">
+          <div>
+            <label>标题 / 选题</label>
+            <input id="title" placeholder="例如：一个爆款养生茶口播">
+          </div>
+          <div>
+            <label>平台</label>
+            <input id="platform" placeholder="抖音 / 小红书 / B站">
+          </div>
+        </div>
+        <div>
+          <label>链接</label>
+          <input id="url" placeholder="可选，粘贴爆款链接">
+        </div>
+        <div>
+          <label>数据</label>
+          <input id="metrics" placeholder="点赞、收藏、评论、转发、播放等">
+        </div>
+        <div>
+          <label>为什么选它</label>
+          <textarea id="reason" placeholder="人工判断：为什么觉得它值得拆"></textarea>
+        </div>
+        <div>
+          <label>口播 / 字幕</label>
+          <textarea id="transcript" placeholder="可选，粘贴口播或字幕。没有也可以先分析结构。"></textarea>
+        </div>
+        <div>
+          <label>备注</label>
+          <textarea id="notes" placeholder="账号、人设、评论区观察、你想迁移的方向"></textarea>
+        </div>
+        <div>
+          <label>上传素材</label>
+          <input id="file" type="file">
+        </div>
+        <div class="actions">
+          <button class="primary" id="analyzeBtn">分析并沉淀 Obsidian</button>
+          <button id="productBtn">查看产品库</button>
+        </div>
+      </div>
+      <div class="panel stack">
+        <div>
+          <label>脚本目标</label>
+          <textarea id="scriptGoal" placeholder="例如：基于这条爆款结构，为灵芝茶生成一条30秒混剪口播脚本"></textarea>
+        </div>
+        <div class="actions">
+          <button class="primary" id="scriptBtn">结合产品库出脚本并导出 loop</button>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="tabs">
+        <button class="active" data-tab="analysis">爆款分析</button>
+        <button data-tab="script">脚本 / Loop</button>
+        <button data-tab="paths">文件路径</button>
+      </div>
+      <pre id="analysis" class="output active"></pre>
+      <pre id="script" class="output"></pre>
+      <pre id="paths" class="output"></pre>
+    </section>
+  </main>
+  <script>
+    let lastAnalysis = '';
+    let lastFilePath = '';
+    const $ = id => document.getElementById(id);
+    function values() {
+      return {
+        title: $('title').value.trim(),
+        platform: $('platform').value.trim(),
+        url: $('url').value.trim(),
+        metrics: $('metrics').value.trim(),
+        reason: $('reason').value.trim(),
+        transcript: $('transcript').value.trim(),
+        notes: $('notes').value.trim(),
+        file_path: lastFilePath
+      };
+    }
+    function output(id, text) { $(id).textContent = text || ''; }
+    function setBusy(btn, busy) { btn.disabled = busy; }
+    document.querySelectorAll('.tabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('active', x === btn));
+        document.querySelectorAll('.output').forEach(x => x.classList.toggle('active', x.id === btn.dataset.tab));
+      });
+    });
+    $('analyzeBtn').addEventListener('click', async () => {
+      const btn = $('analyzeBtn');
+      setBusy(btn, true);
+      output('analysis', '正在分析爆款并写入 Obsidian...');
+      const fd = new FormData();
+      Object.entries(values()).forEach(([k, v]) => fd.append(k, v));
+      if ($('file').files[0]) fd.append('file', $('file').files[0]);
+      try {
+        const res = await fetch('/api/analyze', {method: 'POST', body: fd});
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || '分析失败');
+        lastAnalysis = j.analysis || '';
+        lastFilePath = j.file_path || '';
+        output('analysis', lastAnalysis);
+        output('paths', JSON.stringify(j.paths || {}, null, 2));
+      } catch (e) {
+        output('analysis', e.message);
+      } finally {
+        setBusy(btn, false);
+      }
+    });
+    $('scriptBtn').addEventListener('click', async () => {
+      const btn = $('scriptBtn');
+      setBusy(btn, true);
+      output('script', '正在结合产品库生成脚本和 loop 表...');
+      try {
+        const res = await fetch('/api/generate-script', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({...values(), analysis: lastAnalysis, script_goal: $('scriptGoal').value.trim()})
+        });
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || '生成失败');
+        output('script', j.script || '');
+        output('paths', JSON.stringify(j.paths || {}, null, 2));
+      } catch (e) {
+        output('script', e.message);
+      } finally {
+        setBusy(btn, false);
+      }
+    });
+    $('productBtn').addEventListener('click', async () => {
+      const res = await fetch('/api/product-library');
+      const j = await res.json();
+      output('paths', `产品库目录：${j.dir}\n\n${j.preview || ''}`);
+      document.querySelector('[data-tab="paths"]').click();
+    });
+  </script>
+</body>
+</html>
+
