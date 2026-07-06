@@ -13,6 +13,7 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from content_ops_workflow import feishu, obsidian
+from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
     UploadedCase,
@@ -55,16 +56,38 @@ def create_app() -> Flask:
 
     @app.route("/api/cloud/status")
     def cloud_status():
+        active = runtime_config.load_settings()
         return jsonify(
             {
                 "ok": True,
-                "api_configured": bool(SETTINGS.api_key),
+                "api_configured": bool(active.api_key),
                 "obsidian": obsidian.plugin_status(),
                 "feishu": feishu.status(),
-                "external_loops_dir": SETTINGS.external_loops_dir,
-                "product_kb_dir": SETTINGS.product_kb_dir,
+                "external_loops_dir": active.external_loops_dir,
+                "product_kb_dir": active.product_kb_dir,
             }
         )
+
+    @app.route("/api/config", methods=["GET", "POST"])
+    def runtime_settings():
+        if request.method == "GET":
+            data = runtime_config.load_runtime_config()
+            masked = dict(data)
+            if masked.get("api_key"):
+                masked["api_key"] = "********"
+            if masked.get("obsidian_api_key"):
+                masked["obsidian_api_key"] = "********"
+            return jsonify({"ok": True, "config": masked, "path": runtime_config.RUNTIME_CONFIG_PATH})
+        data = request.json or {}
+        existing = runtime_config.load_runtime_config()
+        merged = {**existing, **data}
+        for key in ("api_key", "obsidian_api_key"):
+            if merged.get(key) == "********":
+                merged[key] = existing.get(key, "")
+        runtime_config.save_runtime_config(merged)
+        reload_settings()
+        ensure_dirs()
+        return jsonify({"ok": True, "config_path": runtime_config.RUNTIME_CONFIG_PATH, "status": feishu.status()})
 
     @app.route("/api/product-library")
     def product_library():
@@ -230,6 +253,22 @@ def case_to_dict(case: UploadedCase) -> dict:
         "notes": case.notes,
         "file_path": case.file_path,
     }
+
+
+def reload_settings() -> None:
+    new_settings = runtime_config.load_settings()
+    runtime_config.SETTINGS = new_settings
+    import content_ops_workflow.config as config_module
+    import content_ops_workflow.feishu as feishu_module
+    import content_ops_workflow.llm as llm_module
+    import content_ops_workflow.obsidian as obsidian_module
+    import content_ops_workflow.workflows.content_ops as workflow_module
+
+    config_module.SETTINGS = new_settings
+    feishu_module.SETTINGS = new_settings
+    llm_module.SETTINGS = new_settings
+    obsidian_module.SETTINGS = new_settings
+    workflow_module.SETTINGS = new_settings
 
 
 app = create_app()

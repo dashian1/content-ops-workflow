@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .env
 .env.*
+runtime_config.json
 uploads/
 outputs/
 obsidian_vault/
