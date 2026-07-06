@@ -9,6 +9,7 @@ uploads/
 outputs/
 obsidian_vault/
 memory/
+loops/
 *.log
 Thumbs.db
 .DS_Store

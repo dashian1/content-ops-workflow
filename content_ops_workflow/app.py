@@ -13,6 +13,7 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from content_ops_workflow import feishu, llm, notes_cli, obsidian
+from content_ops_workflow.engines import loop_engine
 from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
@@ -118,6 +119,26 @@ def create_app() -> Flask:
     @app.route("/api/product-library")
     def product_library():
         return jsonify({"ok": True, "dir": SETTINGS.product_kb_dir, "preview": read_product_library(3000)})
+
+    @app.route("/api/loops/jobs")
+    def loops_jobs():
+        return jsonify(loop_engine.list_jobs())
+
+    @app.route("/api/loops/status", methods=["POST"])
+    def loops_status_update():
+        data = request.json or {}
+        job_id = data.get("job_id", "")
+        if not job_id:
+            return jsonify({"ok": False, "error": "missing job_id"}), 400
+        return jsonify(loop_engine.write_status(job_id, data.get("status", "running"), data))
+
+    @app.route("/api/loops/result", methods=["POST"])
+    def loops_result_update():
+        data = request.json or {}
+        job_id = data.get("job_id", "")
+        if not job_id:
+            return jsonify({"ok": False, "error": "missing job_id"}), 400
+        return jsonify(loop_engine.write_result(job_id, data))
 
     @app.route("/api/os/context", methods=["POST"])
     def os_context():

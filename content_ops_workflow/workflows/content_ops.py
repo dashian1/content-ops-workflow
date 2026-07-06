@@ -14,7 +14,7 @@ from openpyxl import Workbook
 from content_ops_workflow import llm
 from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
-from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, memory_engine, planning_engine, prompt_builder
+from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, loop_engine, memory_engine, planning_engine, prompt_builder
 from content_ops_workflow.video_understanding import VideoPackage, build_video_package, is_video
 
 
@@ -700,7 +700,7 @@ def candidates_to_markdown(title: str, data: dict[str, Any]) -> str:
     return "\n".join(lines).strip() + "\n"
 
 
-def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, str]:
+def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, Any]:
     rows = []
     for row in candidate.get("loop_rows", []):
         rows.append(normalize_loop_row(row))
@@ -714,11 +714,18 @@ def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, str]
     write_loop_csv(csv_path, rows)
     write_loop_xlsx(xlsx_path, rows)
     external = sync_loop_files(csv_path, xlsx_path)
-    return {"csv": csv_path, "xlsx": xlsx_path, **external}
+    job = loop_engine.create_job(
+        title=title or candidate.get("title") or "candidate_loop",
+        rows=rows,
+        source_paths={"csv": csv_path, "xlsx": xlsx_path, **external},
+        candidate=candidate,
+        metadata={"source": "candidate_loop"},
+    )
+    return {"csv": csv_path, "xlsx": xlsx_path, **external, "loop_job": job}
 
 
 def sync_loop_files(csv_path: str, xlsx_path: str) -> dict[str, str]:
-    handoff_dir = os.path.join(SETTINGS.external_loops_dir, "content_ops_handoff")
+    handoff_dir = loop_engine.handoff_dir()
     os.makedirs(handoff_dir, exist_ok=True)
     result: dict[str, str] = {}
     for label, path in (("external_csv", csv_path), ("external_xlsx", xlsx_path)):
@@ -759,7 +766,7 @@ def record_feedback(data: dict[str, Any]) -> dict[str, str]:
     return {"raw_jsonl": raw_path, "review": review, "obsidian": obs["local_path"], "obsidian_vault_path": obs["vault_path"], "obsidian_open_uri": obs["open_uri"]}
 
 
-def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
+def save_script_and_loop(title: str, script_markdown: str) -> dict[str, Any]:
     script_path = write_obsidian_note("07_脚本产出", title or "运营脚本", script_markdown)
     rows = parse_loop_markdown_table(script_markdown)
     today_dir = os.path.join(SETTINGS.output_dir, time.strftime("%Y-%m-%d"))
@@ -774,6 +781,12 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
     loop_local_path = os.path.join(SETTINGS.obsidian_dir, "08_loop生产", os.path.basename(csv_path))
     os.makedirs(os.path.dirname(loop_local_path), exist_ok=True)
     shutil.copyfile(csv_path, loop_local_path)
+    job = loop_engine.create_job(
+        title=title or "运营脚本",
+        rows=rows,
+        source_paths={"csv": csv_path, "xlsx": xlsx_path, **external, "obsidian_csv": loop_local_path},
+        metadata={"source": "formal_script", "script_path": script_path["local_path"]},
+    )
     return {
         "script": script_path["local_path"],
         "script_vault_path": script_path["vault_path"],
@@ -784,6 +797,7 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
         "loop_local_path": loop_local_path,
         "csv": csv_path,
         "xlsx": xlsx_path,
+        "loop_job": job,
         **external,
     }
 

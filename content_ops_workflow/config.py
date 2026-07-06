@@ -99,7 +99,7 @@ def load_settings() -> Settings:
         app_username=os.environ.get("APP_USERNAME", "admin"),
         app_password=os.environ.get("APP_PASSWORD", ""),
         max_upload_mb=int(os.environ.get("MAX_UPLOAD_MB", "800")),
-        external_loops_dir=cfg(data, "EXTERNAL_LOOPS_DIR", "external_loops_dir", r"E:\灵鹤芝谷素材库\loops"),
+        external_loops_dir=cfg(data, "EXTERNAL_LOOPS_DIR", "external_loops_dir", os.path.join(ROOT, "loops")),
         feishu_cli=cfg(data, "FEISHU_CLI", "feishu_cli", ""),
         feishu_base_token=cfg(data, "FEISHU_BASE_TOKEN", "feishu_base_token", ""),
         feishu_analysis_table=cfg(data, "FEISHU_ANALYSIS_TABLE", "feishu_analysis_table", ""),
