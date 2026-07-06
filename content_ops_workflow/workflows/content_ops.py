@@ -14,28 +14,12 @@ from openpyxl import Workbook
 from content_ops_workflow import llm
 from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
-from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, memory_engine, planning_engine
+from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, memory_engine, planning_engine, prompt_builder
 from content_ops_workflow.video_understanding import VideoPackage, build_video_package, is_video
 
 
-LOOP_COLUMNS = [
-    "脚本",
-    "镜头",
-    "状态",
-    "时长(秒)",
-    "场景",
-    "景别",
-    "运镜",
-    "画面",
-    "动作神情",
-    "口播稿",
-    "字幕",
-    "分镜图",
-    "分镜图链接",
-    "视频链接",
-]
-
-SCRIPT_STYLES = ["猎奇", "反差", "反反差", "共鸣", "避坑", "教程", "生活仪式"]
+LOOP_COLUMNS = prompt_builder.LOOP_COLUMNS
+SCRIPT_STYLES = prompt_builder.SCRIPT_STYLES
 
 
 @dataclass
@@ -497,11 +481,10 @@ def script_prompt(case: UploadedCase, analysis: str, product_match: str, product
 
 def generate_script(case: UploadedCase, analysis: str, script_goal: str, product_match: str = "") -> str:
     return llm.call_text(
-        "你是短视频内容运营、产品转化编导和合规审稿。",
-        script_prompt(case, analysis, product_match, read_product_library(), script_goal),
+        "??????????????????????",
+        prompt_builder.build_script_prompt(case, analysis, product_match, script_goal),
         max_tokens=5200,
     )
-
 
 def candidate_prompt(case: UploadedCase, analysis: str, product_match: str, script_goal: str, styles: list[str]) -> str:
     return f"""你是内容运营脚本主编。请基于爆款分析、产品匹配报告和产品库，一次生成多个脚本候选。
@@ -621,19 +604,56 @@ def clean_json_text(text: str) -> str:
     return clean
 
 
+LEGACY_LOOP_COLUMN_ALIASES = {
+    "脚本": ["脚本", "鑴氭湰"],
+    "镜头": ["镜头", "闀滃ご"],
+    "状态": ["状态", "鐘舵€?", "鐘舵€"],
+    "时长(秒)": ["时长(秒)", "鏃堕暱(绉?", "鏃堕暱(绉"],
+    "场景": ["场景", "鍦烘櫙"],
+    "景别": ["景别", "鏅埆"],
+    "运镜": ["运镜", "杩愰暅"],
+    "画面": ["画面", "鐢婚潰"],
+    "动作神情": ["动作神情", "鍔ㄤ綔绁炴儏"],
+    "口播稿": ["口播稿", "鍙ｆ挱绋?", "鍙ｆ挱绋"],
+    "字幕": ["字幕", "瀛楀箷"],
+    "分镜图": ["分镜图", "鍒嗛暅鍥?", "鍒嗛暅鍥"],
+    "分镜图链接": ["分镜图链接", "鍒嗛暅鍥鹃摼鎺?", "鍒嗛暅鍥鹃摼鎺"],
+    "视频链接": ["视频链接", "瑙嗛閾炬帴"],
+}
+
+
+def normalize_loop_row(row: dict[str, Any]) -> dict[str, str]:
+    normalized: dict[str, str] = {}
+    for column in LOOP_COLUMNS:
+        value = ""
+        for alias in LEGACY_LOOP_COLUMN_ALIASES.get(column, [column]):
+            if alias in row and row.get(alias) is not None:
+                value = str(row.get(alias, ""))
+                break
+        normalized[column] = value
+    return normalized
+
+
+def normalize_candidate_rows(data: dict[str, Any]) -> dict[str, Any]:
+    for candidate in data.get("candidates", []) if isinstance(data.get("candidates"), list) else []:
+        rows = candidate.get("loop_rows")
+        if isinstance(rows, list):
+            candidate["loop_rows"] = [normalize_loop_row(row) for row in rows if isinstance(row, dict)]
+    return data
+
+
 def generate_candidates(case: UploadedCase, analysis: str, product_match: str, script_goal: str, styles: list[str] | None = None) -> dict[str, Any]:
     selected_styles = styles or SCRIPT_STYLES
     raw = llm.call_text(
-        "你是短视频内容运营主编，擅长多风格脚本候选池。",
-        candidate_prompt(case, analysis, product_match, script_goal, selected_styles),
+        "???????????????????????",
+        prompt_builder.build_candidate_prompt(case, analysis, product_match, script_goal, selected_styles),
         max_tokens=7000,
     )
     try:
         data = json.loads(clean_json_text(raw))
     except json.JSONDecodeError:
         data = {"candidates": [], "raw": raw}
-    return data
-
+    return normalize_candidate_rows(data)
 
 def save_candidates(title: str, candidates: dict[str, Any]) -> dict[str, str]:
     today_dir = os.path.join(SETTINGS.output_dir, "candidates", time.strftime("%Y-%m-%d"))
@@ -683,7 +703,7 @@ def candidates_to_markdown(title: str, data: dict[str, Any]) -> str:
 def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, str]:
     rows = []
     for row in candidate.get("loop_rows", []):
-        rows.append({column: str(row.get(column, "")) for column in LOOP_COLUMNS})
+        rows.append(normalize_loop_row(row))
     if not rows:
         rows = [{column: "" for column in LOOP_COLUMNS}]
     today_dir = os.path.join(SETTINGS.output_dir, time.strftime("%Y-%m-%d"))
@@ -710,56 +730,8 @@ def sync_loop_files(csv_path: str, xlsx_path: str) -> dict[str, str]:
 
 
 def feedback_prompt(data: dict[str, Any]) -> str:
-    return f"""你是内容运营复盘负责人。请根据发布数据输出可沉淀的实验结论。
-
-【发布数据】
-- 标题: {data.get('title', '')}
-- 平台: {data.get('platform', '')}
-- 视频链接: {data.get('video_url', '')}
-- 候选ID/风格: {data.get('candidate_id', '')} / {data.get('style', '')}
-- 产品: {data.get('product', '')}
-- 爆款模板: {data.get('template', '')}
-- 受众: {data.get('audience', '')}
-- 播放: {data.get('views', '')}
-- 点赞: {data.get('likes', '')}
-- 评论: {data.get('comments', '')}
-- 收藏: {data.get('saves', '')}
-- 转发: {data.get('shares', '')}
-- 完播率: {data.get('completion_rate', '')}
-- 转化/询单: {data.get('conversion', '')}
-- 人工备注: {data.get('notes', '')}
-
-请输出 Markdown:
-
-# 发布数据复盘
-
-## 1. 结果判断
-- 是否值得继续:
-- 最主要信号:
-- 最大问题:
-
-## 2. 模板表现
-- 爆款模板是否成立:
-- 哪个元素有效:
-- 哪个元素无效:
-
-## 3. 产品表现
-- 产品承接是否自然:
-- 产品证据是否足够:
-- 合规/信任问题:
-
-## 4. 受众反馈
-- 评论区可能说明:
-- 收藏/转发说明:
-- 完播表现说明:
-
-## 5. 下一轮建议
-- 保留:
-- 删除:
-- A/B 测试:
-- 新脚本方向:
-"""
-
+    evaluation = evaluation_engine.evaluate(data)
+    return prompt_builder.build_feedback_prompt(data, evaluation)
 
 def record_feedback(data: dict[str, Any]) -> dict[str, str]:
     today_dir = os.path.join(SETTINGS.output_dir, "feedback", time.strftime("%Y-%m-%d"))
@@ -818,27 +790,35 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
 
 def parse_loop_markdown_table(markdown: str) -> list[dict[str, str]]:
     lines = [line.strip() for line in markdown.splitlines() if line.strip().startswith("|")]
-    table_lines = [line for line in lines if "脚本" in line and "镜头" in line or len(line.split("|")) >= len(LOOP_COLUMNS) + 2]
     rows: list[dict[str, str]] = []
-    header_seen = False
-    for line in table_lines:
+    header: list[str] = []
+    for line in lines:
         cells = [cell.strip() for cell in line.strip("|").split("|")]
         if not cells:
             continue
-        if all(set(cell) <= {"-", ":"} for cell in cells):
+        non_empty_cells = [cell.replace(" ", "") for cell in cells if cell.strip()]
+        if non_empty_cells and all(set(cell) <= {"-", ":"} for cell in non_empty_cells):
             continue
-        if "脚本" in cells and "镜头" in cells:
-            header_seen = True
+        if _is_loop_header(cells):
+            header = cells
             continue
-        if not header_seen:
+        if not header and len(cells) >= len(LOOP_COLUMNS):
+            header = LOOP_COLUMNS
             continue
-        values = cells[: len(LOOP_COLUMNS)]
-        values += [""] * (len(LOOP_COLUMNS) - len(values))
-        rows.append(dict(zip(LOOP_COLUMNS, values)))
+        if not header:
+            continue
+        raw = dict(zip(header, cells))
+        rows.append(normalize_loop_row(raw))
     if rows:
         return rows
     return [{column: "" for column in LOOP_COLUMNS}]
 
+
+def _is_loop_header(cells: list[str]) -> bool:
+    joined = "|".join(cells)
+    if "??" in joined and "??" in joined:
+        return True
+    return "???" in joined and "???" in joined
 
 def write_loop_csv(path: str, rows: list[dict[str, str]]) -> None:
     with open(path, "w", encoding="utf-8-sig", newline="") as f:
