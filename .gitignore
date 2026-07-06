@@ -8,6 +8,7 @@ runtime_config.json
 uploads/
 outputs/
 obsidian_vault/
+memory/
 *.log
 Thumbs.db
 .DS_Store

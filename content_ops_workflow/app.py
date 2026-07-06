@@ -22,6 +22,8 @@ from content_ops_workflow.workflows.content_ops import (
     enrich_case_with_video,
     generate_candidates,
     generate_script,
+    build_operating_context,
+    evaluate_and_evolve,
     loop_from_candidate,
     match_product,
     read_product_library,
@@ -116,6 +118,18 @@ def create_app() -> Flask:
     @app.route("/api/product-library")
     def product_library():
         return jsonify({"ok": True, "dir": SETTINGS.product_kb_dir, "preview": read_product_library(3000)})
+
+    @app.route("/api/os/context", methods=["POST"])
+    def os_context():
+        data = request.json or {}
+        case = json_case(data)
+        result = build_operating_context(
+            case,
+            data.get("analysis", ""),
+            data.get("product_match", ""),
+            data.get("goal") or data.get("script_goal", ""),
+        )
+        return jsonify({"ok": True, **result})
 
     @app.route("/api/obsidian/status")
     def obsidian_status():
@@ -230,8 +244,9 @@ def create_app() -> Flask:
     def feedback():
         data = request.json or {}
         paths = record_feedback(data)
+        learning = evaluate_and_evolve(data, paths.get("review", ""))
         feishu_result = feishu.push_payload("review", {"feedback": data, "review": paths.get("review", ""), "paths": paths})
-        return jsonify({"ok": True, "paths": paths, "review": paths.get("review", ""), "feishu": feishu_result})
+        return jsonify({"ok": True, "paths": paths, "review": paths.get("review", ""), "learning": learning, "feishu": feishu_result})
 
     @app.route("/api/feishu/push", methods=["POST"])
     def feishu_push():

@@ -14,6 +14,7 @@ from openpyxl import Workbook
 from content_ops_workflow import llm
 from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
+from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, memory_engine, planning_engine
 from content_ops_workflow.video_understanding import VideoPackage, build_video_package, is_video
 
 
@@ -857,3 +858,60 @@ def write_loop_xlsx(path: str, rows: list[dict[str, str]]) -> None:
         letter = col[0].column_letter
         ws.column_dimensions[letter].width = 18
     wb.save(path)
+
+
+def build_case_summary(case: UploadedCase, analysis: str = "", product_match: str = "") -> str:
+    return f"""标题: {case.title}
+平台: {case.platform}
+链接: {case.url}
+数据: {case.metrics}
+人工选择原因: {case.reason}
+口播/字幕: {(case.transcript or '')[:1200]}
+备注: {(case.notes or '')[:800]}
+
+爆款分析摘要:
+{analysis[:1800]}
+
+产品匹配摘要:
+{product_match[:1200]}
+"""
+
+
+def build_operating_context(case: UploadedCase, analysis: str = "", product_match: str = "", goal: str = "") -> dict[str, Any]:
+    context = context_engine.build_context(
+        goal=goal,
+        product=extract_section(product_match, "## 2.")[:400] if product_match else "",
+        platform=case.platform,
+        audience=extract_section(analysis, "## 4.")[:400] if analysis else "",
+    )
+    plan = planning_engine.build_plan(build_case_summary(case, analysis, product_match), context, goal)
+    path = memory_engine.append_jsonl(
+        "planning",
+        {
+            "case": {
+                "title": case.title,
+                "platform": case.platform,
+                "url": case.url,
+                "metrics": case.metrics,
+            },
+            "goal": goal,
+            "plan": plan,
+        },
+    )
+    return {
+        "context": {
+            "context_note": context.context_note,
+            "has_products": bool(context.product_library.strip()),
+            "has_patterns": bool(context.patterns.strip()),
+            "has_strategies": bool(context.strategies.strip()),
+        },
+        "prompt_context": context_engine.to_prompt_block(context),
+        "plan": plan,
+        "memory_event": path,
+    }
+
+
+def evaluate_and_evolve(data: dict[str, Any], review: str = "") -> dict[str, Any]:
+    evaluation = evaluation_engine.evaluate(data)
+    evolution = evolution_engine.update_from_feedback(data, evaluation, review)
+    return {"evaluation": evaluation, "evolution": evolution}
