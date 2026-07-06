@@ -177,24 +177,56 @@
         </div>
         <div class="actions">
           <button class="primary" id="scriptBtn">结合产品库出脚本并导出 loop</button>
+          <button id="candidateBtn">生成多风格候选池</button>
         </div>
+      </div>
+      <div class="panel stack">
+        <div class="hint">发布后把数据回填，系统会沉淀到 Obsidian 数据复盘库。</div>
+        <div class="row">
+          <div><label>候选ID/风格</label><input id="candidateId" placeholder="C01 / 猎奇"></div>
+          <div><label>产品</label><input id="feedbackProduct" placeholder="承接产品"></div>
+        </div>
+        <div><label>视频链接</label><input id="videoUrl" placeholder="发布后链接"></div>
+        <div class="row">
+          <div><label>播放</label><input id="views"></div>
+          <div><label>完播率</label><input id="completionRate"></div>
+        </div>
+        <div class="row">
+          <div><label>点赞</label><input id="likes"></div>
+          <div><label>评论</label><input id="comments"></div>
+        </div>
+        <div class="row">
+          <div><label>收藏</label><input id="saves"></div>
+          <div><label>转发</label><input id="shares"></div>
+        </div>
+        <div><label>转化/询单</label><input id="conversion"></div>
+        <div><label>复盘备注</label><textarea id="feedbackNotes"></textarea></div>
+        <div class="actions"><button id="feedbackBtn" class="primary">回填数据并复盘</button></div>
       </div>
     </section>
     <section class="panel">
       <div class="tabs">
         <button class="active" data-tab="analysis">爆款分析</button>
+        <button data-tab="match">产品匹配</button>
+        <button data-tab="candidates">候选池</button>
         <button data-tab="script">脚本 / Loop</button>
+        <button data-tab="review">数据复盘</button>
         <button data-tab="paths">文件路径</button>
       </div>
       <pre id="analysis" class="output active"></pre>
+      <pre id="match" class="output"></pre>
+      <pre id="candidates" class="output"></pre>
       <pre id="script" class="output"></pre>
+      <pre id="review" class="output"></pre>
       <pre id="paths" class="output"></pre>
     </section>
   </main>
   <script>
     let lastAnalysis = '';
+    let lastProductMatch = '';
     let lastFilePath = '';
     let lastPaths = {};
+    let lastCandidates = [];
     const $ = id => document.getElementById(id);
     function values() {
       return {
@@ -251,8 +283,11 @@
         const j = await res.json();
         if (!j.ok) throw new Error(j.error || '分析失败');
         lastAnalysis = j.analysis || '';
+        lastProductMatch = j.product_match || '';
         lastFilePath = j.file_path || '';
         output('analysis', lastAnalysis);
+        output('match', lastProductMatch);
+        if (j.video_package?.transcript && !$('transcript').value.trim()) $('transcript').value = j.video_package.transcript;
         output('paths', formatPaths(j.paths || {}));
       } catch (e) {
         output('analysis', e.message);
@@ -268,7 +303,7 @@
         const res = await fetch('/api/generate-script', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({...values(), analysis: lastAnalysis, script_goal: $('scriptGoal').value.trim()})
+          body: JSON.stringify({...values(), analysis: lastAnalysis, product_match: lastProductMatch, script_goal: $('scriptGoal').value.trim()})
         });
         const j = await res.json();
         if (!j.ok) throw new Error(j.error || '生成失败');
@@ -276,6 +311,67 @@
         output('paths', formatPaths(j.paths || {}));
       } catch (e) {
         output('script', e.message);
+      } finally {
+        setBusy(btn, false);
+      }
+    });
+    $('candidateBtn').addEventListener('click', async () => {
+      const btn = $('candidateBtn');
+      setBusy(btn, true);
+      output('candidates', '正在生成猎奇、反差、反反差、共鸣、避坑、教程、生活仪式候选...');
+      try {
+        const res = await fetch('/api/candidates', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({...values(), analysis: lastAnalysis, product_match: lastProductMatch, script_goal: $('scriptGoal').value.trim()})
+        });
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || '生成候选失败');
+        lastCandidates = j.candidates?.candidates || [];
+        output('candidates', JSON.stringify(j.candidates || {}, null, 2));
+        output('paths', formatPaths(j.paths || {}));
+        document.querySelector('[data-tab="candidates"]').click();
+      } catch (e) {
+        output('candidates', e.message);
+      } finally {
+        setBusy(btn, false);
+      }
+    });
+    $('feedbackBtn').addEventListener('click', async () => {
+      const btn = $('feedbackBtn');
+      setBusy(btn, true);
+      output('review', '正在生成数据复盘...');
+      try {
+        const [candidate_id, style] = $('candidateId').value.split('/').map(x => (x || '').trim());
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: $('title').value.trim(),
+            platform: $('platform').value.trim(),
+            video_url: $('videoUrl').value.trim(),
+            candidate_id,
+            style,
+            product: $('feedbackProduct').value.trim(),
+            template: '',
+            audience: '',
+            views: $('views').value.trim(),
+            likes: $('likes').value.trim(),
+            comments: $('comments').value.trim(),
+            saves: $('saves').value.trim(),
+            shares: $('shares').value.trim(),
+            completion_rate: $('completionRate').value.trim(),
+            conversion: $('conversion').value.trim(),
+            notes: $('feedbackNotes').value.trim()
+          })
+        });
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || '复盘失败');
+        output('review', j.review || '');
+        output('paths', formatPaths(j.paths || {}));
+        document.querySelector('[data-tab="review"]').click();
+      } catch (e) {
+        output('review', e.message);
       } finally {
         setBusy(btn, false);
       }

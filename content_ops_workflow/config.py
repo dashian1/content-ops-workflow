@@ -23,6 +23,9 @@ class Settings:
     model: str
     host: str
     port: int
+    app_username: str
+    app_password: str
+    max_upload_mb: int
 
 
 def load_settings() -> Settings:
@@ -44,6 +47,9 @@ def load_settings() -> Settings:
         model=os.environ.get("API_MODEL", "deepseek-v4-pro"),
         host=os.environ.get("HOST", "127.0.0.1"),
         port=int(os.environ.get("PORT", "5015")),
+        app_username=os.environ.get("APP_USERNAME", "admin"),
+        app_password=os.environ.get("APP_PASSWORD", ""),
+        max_upload_mb=int(os.environ.get("MAX_UPLOAD_MB", "800")),
     )
 
 
@@ -63,5 +69,8 @@ def ensure_dirs() -> None:
         os.path.join(SETTINGS.obsidian_dir, "06_剪辑风格库"),
         os.path.join(SETTINGS.obsidian_dir, "07_脚本产出"),
         os.path.join(SETTINGS.obsidian_dir, "08_loop生产"),
+        os.path.join(SETTINGS.obsidian_dir, "09_视频理解包"),
+        os.path.join(SETTINGS.obsidian_dir, "10_产品匹配"),
+        os.path.join(SETTINGS.obsidian_dir, "11_数据复盘"),
     ]:
         os.makedirs(path, exist_ok=True)

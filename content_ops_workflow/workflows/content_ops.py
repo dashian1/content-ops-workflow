@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import os
 import re
 import shutil
@@ -13,6 +14,7 @@ from openpyxl import Workbook
 from content_ops_workflow import llm
 from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
+from content_ops_workflow.video_understanding import VideoPackage, build_video_package, is_video
 
 
 LOOP_COLUMNS = [
@@ -32,6 +34,8 @@ LOOP_COLUMNS = [
     "视频链接",
 ]
 
+SCRIPT_STYLES = ["猎奇", "反差", "反反差", "共鸣", "避坑", "教程", "生活仪式"]
+
 
 @dataclass
 class UploadedCase:
@@ -43,12 +47,35 @@ class UploadedCase:
     transcript: str
     notes: str
     file_path: str
+    video_package: VideoPackage | None = None
 
 
 def safe_filename(text: str, fallback: str = "content") -> str:
     text = re.sub(r'[\\/:*?"<>|\r\n\t]+', "_", (text or "").strip())
     text = re.sub(r"\s+", "_", text).strip("._ ")
     return text[:80] or fallback
+
+
+def yaml_escape(value: str) -> str:
+    value = (value or "").replace('"', '\\"')
+    return f'"{value}"'
+
+
+def yaml_list(values: list[str], indent: str = "  ") -> list[str]:
+    clean = [value for value in values if value]
+    if not clean:
+        return [f"{indent}- 未分类"]
+    return [f"{indent}- {value}" for value in clean]
+
+
+def frontmatter(fields: dict[str, str], tags: list[str]) -> str:
+    lines = ["---"]
+    for key, value in fields.items():
+        lines.append(f"{key}: {yaml_escape(str(value))}")
+    lines.append("tags:")
+    lines.extend(yaml_list(tags))
+    lines.append("---")
+    return "\n".join(lines) + "\n\n"
 
 
 def save_upload(file_storage: Any) -> str:
@@ -81,6 +108,51 @@ def read_product_library(limit: int = 12000) -> str:
     return "\n\n---\n\n".join(chunks)[:limit]
 
 
+def read_template_library(limit: int = 8000) -> str:
+    path = os.path.join(SETTINGS.root, "templates_library", "viral_templates.md")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read()[:limit]
+    except OSError:
+        return "未找到爆款结构模板库。"
+
+
+def video_context(case: UploadedCase) -> str:
+    if not case.video_package:
+        return "未生成视频理解包。"
+    package = case.video_package
+    manifest_text = ""
+    try:
+        with open(package.manifest_path, encoding="utf-8") as f:
+            manifest_text = f.read()[:2500]
+    except OSError:
+        pass
+    return f"""视频理解包:
+- package_dir: {package.package_dir}
+- manifest_path: {package.manifest_path}
+- duration: {package.duration:.1f}s
+- fps: {package.fps:.2f}
+- frames: {package.frame_count}
+- transcript_source: {package.transcript_source}
+- transcript_warning: {package.transcript_warning}
+
+自动口播:
+{package.transcript[:3000] if package.transcript else "未识别到有效口播"}
+
+MANIFEST 摘要:
+{manifest_text}
+"""
+
+
+def enrich_case_with_video(case: UploadedCase) -> UploadedCase:
+    if case.file_path and is_video(case.file_path):
+        package = build_video_package(case.file_path, case.transcript, case.title, case.url)
+        case.video_package = package
+        if not case.transcript and package.transcript:
+            case.transcript = package.transcript
+    return case
+
+
 def analyze_prompt(case: UploadedCase, product_library: str) -> str:
     return f"""你是内容运营负责人。请分析一条由人工筛选出来的爆款素材。
 
@@ -96,8 +168,14 @@ def analyze_prompt(case: UploadedCase, product_library: str) -> str:
 - 口播/字幕: {case.transcript[:3000] if case.transcript else "未提供"}
 - 备注: {case.notes[:1500] if case.notes else "无"}
 
+【视频理解】
+{video_context(case)}
+
 【产品库摘要】
 {product_library}
+
+【爆款结构模板库】
+{read_template_library()}
 
 请输出:
 
@@ -186,6 +264,71 @@ def analyze_case(case: UploadedCase) -> str:
     )
 
 
+def product_match_prompt(case: UploadedCase, analysis: str, product_library: str) -> str:
+    return f"""你是产品匹配和内容运营策略负责人。请基于爆款分析、爆款模板库和产品库，单独输出产品匹配报告。
+
+【爆款素材】
+- 标题: {case.title}
+- 平台: {case.platform}
+- 链接: {case.url}
+- 数据: {case.metrics}
+- 人工选择原因: {case.reason}
+
+【爆款分析】
+{analysis[:5000]}
+
+【爆款结构模板库】
+{read_template_library()}
+
+【产品库】
+{product_library}
+
+请输出 Markdown:
+
+# 产品匹配报告
+
+## 1. 推荐产品排序
+| 排名 | 产品 | 匹配度(0-100) | 适配理由 | 风险 |
+
+## 2. 最佳承接产品
+- 产品:
+- 目标受众:
+- 对应爆款结构模板:
+- 为什么适合:
+- 不适合的部分:
+
+## 3. 产品自然出现位置
+- 开头:
+- 中段:
+- 证据段:
+- 收尾:
+
+## 4. 必须出现的视觉证据
+- 证据1:
+- 证据2:
+- 证据3:
+
+## 5. 合规边界
+- 禁用表达:
+- 安全替代表达:
+- 不能照搬的爆款表达:
+
+## 6. 脚本生成建议
+- 推荐风格:
+- 推荐时长:
+- 推荐呈现形式:
+- 推荐剪辑风格:
+"""
+
+
+def match_product(case: UploadedCase, analysis: str) -> str:
+    return llm.call_text(
+        "你是产品匹配、内容转化和合规策略负责人。",
+        product_match_prompt(case, analysis, read_product_library()),
+        max_tokens=3200,
+    )
+
+
 def write_obsidian_note(folder: str, title: str, body: str) -> dict[str, str]:
     vault_path = f"{folder}/{time.strftime('%Y%m%d_%H%M%S')}_{safe_filename(title)}.md"
     result = obsidian.write_note(vault_path, body)
@@ -198,19 +341,24 @@ def write_obsidian_note(folder: str, title: str, body: str) -> dict[str, str]:
     }
 
 
-def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, dict[str, str]]:
+def deposit_to_obsidian(case: UploadedCase, analysis: str, product_match: str = "") -> dict[str, dict[str, str]]:
     title = case.title or "爆款素材"
-    frontmatter = [
-        "---",
-        f"title: {title}",
-        f"platform: {case.platform}",
-        f"url: {case.url}",
-        f"metrics: {case.metrics}",
-        f"created: {time.strftime('%Y-%m-%d %H:%M:%S')}",
-        "---",
-        "",
-    ]
-    full = "\n".join(frontmatter) + analysis
+    created = time.strftime("%Y-%m-%d %H:%M:%S")
+    base_fields = {
+        "title": title,
+        "type": "viral_analysis",
+        "status": "analyzed",
+        "platform": case.platform,
+        "url": case.url,
+        "metrics": case.metrics,
+        "source_file": case.file_path,
+        "video_package": case.video_package.package_dir if case.video_package else "",
+        "video_manifest": case.video_package.manifest_path if case.video_package else "",
+        "transcript_source": case.video_package.transcript_source if case.video_package else ("manual" if case.transcript else ""),
+        "created": created,
+    }
+    base_tags = ["内容运营", "爆款分析", f"平台/{safe_filename(case.platform, '未填')}"]
+    full = frontmatter(base_fields, base_tags) + analysis
     paths: dict[str, dict[str, str]] = {
         "analysis": write_obsidian_note("01_爆款分析", title, full),
     }
@@ -224,8 +372,48 @@ def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, dict[str
         ("06_剪辑风格库", "剪辑风格", "## 9. 剪辑风格"),
     ]
     for folder, label, marker in card_sections:
-        body = f"# {label}卡片 - {title}\n\n来源: [[{analysis_note_name}]]\n\n{extract_section(analysis, marker)}"
+        card_type = {
+            "话题": "topic_card",
+            "选题": "angle_card",
+            "结构": "structure_card",
+            "金句": "quote_card",
+            "剪辑风格": "editing_style_card",
+        }.get(label, "knowledge_card")
+        card_body = frontmatter(
+            {
+                "title": f"{label}卡片 - {title}",
+                "type": card_type,
+                "status": "active",
+                "source_note": analysis_note_name,
+                "platform": case.platform,
+                "source_url": case.url,
+                "created": created,
+            },
+            ["内容运营", "知识卡片", label, f"平台/{safe_filename(case.platform, '未填')}"],
+        )
+        body = f"{card_body}# {label}卡片 - {title}\n\n来源: [[{analysis_note_name}]]\n\n{extract_section(analysis, marker)}"
         paths[label] = write_obsidian_note(folder, title, body)
+    if case.video_package:
+        try:
+            with open(case.video_package.manifest_path, encoding="utf-8") as f:
+                manifest = f.read()
+            paths["video_manifest"] = write_obsidian_note("09_视频理解包", title, manifest)
+        except OSError:
+            pass
+    if product_match:
+        body = frontmatter(
+            {
+                "title": f"产品匹配 - {title}",
+                "type": "product_match",
+                "status": "active",
+                "source_note": analysis_note_name,
+                "platform": case.platform,
+                "source_url": case.url,
+                "created": created,
+            },
+            ["内容运营", "产品匹配", f"平台/{safe_filename(case.platform, '未填')}"],
+        )
+        paths["product_match"] = write_obsidian_note("10_产品匹配", title, body + product_match)
     return paths
 
 
@@ -241,7 +429,7 @@ def extract_section(markdown: str, marker: str) -> str:
     return rest[:end].strip()
 
 
-def script_prompt(case: UploadedCase, analysis: str, product_library: str, script_goal: str) -> str:
+def script_prompt(case: UploadedCase, analysis: str, product_match: str, product_library: str, script_goal: str) -> str:
     return f"""你是内容运营编导。请基于爆款分析和产品库，生成一条可进入生产 loop 的新脚本。
 
 要求:
@@ -263,6 +451,9 @@ def script_prompt(case: UploadedCase, analysis: str, product_library: str, scrip
 
 【爆款分析】
 {analysis[:6000]}
+
+【产品匹配报告】
+{product_match[:3000] if product_match else "未提供，请自行从产品库中匹配。"}
 
 【产品库】
 {product_library}
@@ -288,12 +479,251 @@ def script_prompt(case: UploadedCase, analysis: str, product_library: str, scrip
 """
 
 
-def generate_script(case: UploadedCase, analysis: str, script_goal: str) -> str:
+def generate_script(case: UploadedCase, analysis: str, script_goal: str, product_match: str = "") -> str:
     return llm.call_text(
         "你是短视频内容运营、产品转化编导和合规审稿。",
-        script_prompt(case, analysis, read_product_library(), script_goal),
+        script_prompt(case, analysis, product_match, read_product_library(), script_goal),
         max_tokens=5200,
     )
+
+
+def candidate_prompt(case: UploadedCase, analysis: str, product_match: str, script_goal: str, styles: list[str]) -> str:
+    return f"""你是内容运营脚本主编。请基于爆款分析、产品匹配报告和产品库，一次生成多个脚本候选。
+
+必须输出严格 JSON，不要 Markdown 代码块。
+
+每个候选都要有:
+- id
+- style
+- title
+- hook
+- product
+- audience
+- risk_note
+- reason_to_pick
+- oral_script
+- loop_rows
+
+loop_rows 每行必须包含:
+脚本, 镜头, 状态, 时长(秒), 场景, 景别, 运镜, 画面, 动作神情, 口播稿, 字幕, 分镜图, 分镜图链接, 视频链接
+
+候选风格:
+{", ".join(styles)}
+
+【脚本目标】
+{script_goal or "基于爆款结构生成多版本短视频脚本候选"}
+
+【爆款素材】
+- 标题: {case.title}
+- 平台: {case.platform}
+- 链接: {case.url}
+- 数据: {case.metrics}
+- 人工选择原因: {case.reason}
+
+【爆款分析】
+{analysis[:5500]}
+
+【产品匹配报告】
+{product_match[:3500]}
+
+【产品库】
+{read_product_library(8000)}
+
+JSON 格式:
+{{
+  "candidates": [
+    {{
+      "id": "C01",
+      "style": "猎奇",
+      "title": "",
+      "hook": "",
+      "product": "",
+      "audience": "",
+      "risk_note": "",
+      "reason_to_pick": "",
+      "oral_script": "",
+      "loop_rows": [
+        {{
+          "脚本": "C01",
+          "镜头": "镜头1",
+          "状态": "待生产",
+          "时长(秒)": "3",
+          "场景": "",
+          "景别": "",
+          "运镜": "",
+          "画面": "",
+          "动作神情": "",
+          "口播稿": "",
+          "字幕": "",
+          "分镜图": "",
+          "分镜图链接": "",
+          "视频链接": ""
+        }}
+      ]
+    }}
+  ]
+}}
+"""
+
+
+def clean_json_text(text: str) -> str:
+    clean = text.strip()
+    if clean.startswith("```"):
+        clean = clean.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    return clean
+
+
+def generate_candidates(case: UploadedCase, analysis: str, product_match: str, script_goal: str, styles: list[str] | None = None) -> dict[str, Any]:
+    selected_styles = styles or SCRIPT_STYLES
+    raw = llm.call_text(
+        "你是短视频内容运营主编，擅长多风格脚本候选池。",
+        candidate_prompt(case, analysis, product_match, script_goal, selected_styles),
+        max_tokens=7000,
+    )
+    try:
+        data = json.loads(clean_json_text(raw))
+    except json.JSONDecodeError:
+        data = {"candidates": [], "raw": raw}
+    return data
+
+
+def save_candidates(title: str, candidates: dict[str, Any]) -> dict[str, str]:
+    today_dir = os.path.join(SETTINGS.output_dir, "candidates", time.strftime("%Y-%m-%d"))
+    os.makedirs(today_dir, exist_ok=True)
+    base = f"{time.strftime('%H%M%S')}_{safe_filename(title or 'candidates')}"
+    json_path = os.path.join(today_dir, f"{base}.json")
+    md_path = os.path.join(today_dir, f"{base}.md")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(candidates, f, ensure_ascii=False, indent=2)
+    markdown = candidates_to_markdown(title, candidates)
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(markdown)
+    note = write_obsidian_note("07_脚本产出", f"候选池_{title}", markdown)
+    return {"json": json_path, "markdown": md_path, "obsidian": note["local_path"], "obsidian_vault_path": note["vault_path"], "obsidian_open_uri": note["open_uri"]}
+
+
+def candidates_to_markdown(title: str, data: dict[str, Any]) -> str:
+    lines = [
+        frontmatter(
+            {"title": f"脚本候选池 - {title}", "type": "script_candidate_pool", "status": "candidate", "created": time.strftime("%Y-%m-%d %H:%M:%S")},
+            ["内容运营", "脚本候选池"],
+        ),
+        f"# 脚本候选池 - {title}",
+        "",
+    ]
+    for item in data.get("candidates", []):
+        lines.extend(
+            [
+                f"## {item.get('id', '')} {item.get('style', '')} - {item.get('title', '')}",
+                "",
+                f"- Hook: {item.get('hook', '')}",
+                f"- 产品: {item.get('product', '')}",
+                f"- 受众: {item.get('audience', '')}",
+                f"- 选择理由: {item.get('reason_to_pick', '')}",
+                f"- 风险: {item.get('risk_note', '')}",
+                "",
+                "### 口播",
+                item.get("oral_script", ""),
+                "",
+            ]
+        )
+    if data.get("raw"):
+        lines.extend(["## 原始输出", "", data["raw"]])
+    return "\n".join(lines).strip() + "\n"
+
+
+def loop_from_candidate(candidate: dict[str, Any], title: str) -> dict[str, str]:
+    rows = []
+    for row in candidate.get("loop_rows", []):
+        rows.append({column: str(row.get(column, "")) for column in LOOP_COLUMNS})
+    if not rows:
+        rows = [{column: "" for column in LOOP_COLUMNS}]
+    today_dir = os.path.join(SETTINGS.output_dir, time.strftime("%Y-%m-%d"))
+    os.makedirs(today_dir, exist_ok=True)
+    base = f"{time.strftime('%H%M%S')}_{safe_filename(title or candidate.get('title') or 'candidate_loop')}"
+    csv_path = os.path.join(today_dir, f"{base}_loop.csv")
+    xlsx_path = os.path.join(today_dir, f"{base}_loop.xlsx")
+    write_loop_csv(csv_path, rows)
+    write_loop_xlsx(xlsx_path, rows)
+    return {"csv": csv_path, "xlsx": xlsx_path}
+
+
+def feedback_prompt(data: dict[str, Any]) -> str:
+    return f"""你是内容运营复盘负责人。请根据发布数据输出可沉淀的实验结论。
+
+【发布数据】
+- 标题: {data.get('title', '')}
+- 平台: {data.get('platform', '')}
+- 视频链接: {data.get('video_url', '')}
+- 候选ID/风格: {data.get('candidate_id', '')} / {data.get('style', '')}
+- 产品: {data.get('product', '')}
+- 爆款模板: {data.get('template', '')}
+- 受众: {data.get('audience', '')}
+- 播放: {data.get('views', '')}
+- 点赞: {data.get('likes', '')}
+- 评论: {data.get('comments', '')}
+- 收藏: {data.get('saves', '')}
+- 转发: {data.get('shares', '')}
+- 完播率: {data.get('completion_rate', '')}
+- 转化/询单: {data.get('conversion', '')}
+- 人工备注: {data.get('notes', '')}
+
+请输出 Markdown:
+
+# 发布数据复盘
+
+## 1. 结果判断
+- 是否值得继续:
+- 最主要信号:
+- 最大问题:
+
+## 2. 模板表现
+- 爆款模板是否成立:
+- 哪个元素有效:
+- 哪个元素无效:
+
+## 3. 产品表现
+- 产品承接是否自然:
+- 产品证据是否足够:
+- 合规/信任问题:
+
+## 4. 受众反馈
+- 评论区可能说明:
+- 收藏/转发说明:
+- 完播表现说明:
+
+## 5. 下一轮建议
+- 保留:
+- 删除:
+- A/B 测试:
+- 新脚本方向:
+"""
+
+
+def record_feedback(data: dict[str, Any]) -> dict[str, str]:
+    today_dir = os.path.join(SETTINGS.output_dir, "feedback", time.strftime("%Y-%m-%d"))
+    os.makedirs(today_dir, exist_ok=True)
+    raw_path = os.path.join(today_dir, "feedback.jsonl")
+    with open(raw_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps({**data, "created": time.strftime("%Y-%m-%d %H:%M:%S")}, ensure_ascii=False) + "\n")
+    review = llm.call_text("你是短视频内容运营复盘负责人。", feedback_prompt(data), max_tokens=2600)
+    note = frontmatter(
+        {
+            "title": f"数据复盘 - {data.get('title', '未命名')}",
+            "type": "performance_review",
+            "status": "reviewed",
+            "platform": data.get("platform", ""),
+            "product": data.get("product", ""),
+            "candidate_id": data.get("candidate_id", ""),
+            "style": data.get("style", ""),
+            "template": data.get("template", ""),
+            "video_url": data.get("video_url", ""),
+            "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+        },
+        ["内容运营", "数据复盘", f"平台/{safe_filename(data.get('platform', ''), '未填')}", f"产品/{safe_filename(data.get('product', ''), '未填')}"],
+    ) + review
+    obs = write_obsidian_note("11_数据复盘", data.get("title", "发布数据复盘"), note)
+    return {"raw_jsonl": raw_path, "review": review, "obsidian": obs["local_path"], "obsidian_vault_path": obs["vault_path"], "obsidian_open_uri": obs["open_uri"]}
 
 
 def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:

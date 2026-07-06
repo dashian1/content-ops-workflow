@@ -59,6 +59,11 @@ obsidian_vault/
   08_loop生产/
 product_library/
   README.md
+skills/
+  viral-content-analysis/
+  obsidian-operation-kb/
+  product-fit-script-generation/
+  content-loop-handoff/
 outputs/
 uploads/
 ```
@@ -132,3 +137,16 @@ $env:OBSIDIAN_VAULT_DIR="E:\你的 Obsidian Vault"
 打开笔记：
 
 系统会生成 `obsidian://open` 链接，可通过 Obsidian URI 打开对应笔记。
+
+## 当前能力清单
+
+- 上传视频后自动生成视频理解包：口播转写、关键帧、MANIFEST。
+- 按运营维度分析爆款：话题、选题、受众、形式、爆款元素、结构、金句、剪辑风格。
+- Obsidian 插件级写入，失败时文件模式兜底。
+- Obsidian 标准 YAML 字段与 tags，支持后续 Dataview 检索。
+- 产品库匹配层：推荐产品、承接位置、视觉证据、合规边界。
+- 爆款结构模板库：猎奇、反差、反反差、避坑、共鸣、教程、生活仪式等。
+- 多版本脚本候选池。
+- 选中候选导出 loop CSV/XLSX。
+- 发布数据回流和复盘沉淀。
+- 可选 Basic Auth 权限保护。
