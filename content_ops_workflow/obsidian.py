@@ -120,9 +120,12 @@ def write_note(vault_path: str, body: str) -> ObsidianWriteResult:
 
 def open_uri(uri: str) -> str:
     try:
-        subprocess.Popen(["cmd", "/c", "start", "", uri], shell=False)
+        subprocess.Popen(["powershell", "-NoProfile", "-Command", "Start-Process", uri], shell=False)
     except OSError:
-        webbrowser.open(uri)
+        try:
+            subprocess.Popen(["cmd", "/c", "start", "", uri], shell=False)
+        except OSError:
+            webbrowser.open(uri)
     return uri
 
 

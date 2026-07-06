@@ -66,7 +66,11 @@ def save_runtime_config(data: dict) -> None:
         "feishu_review_table",
         "notes_cli",
     }
+    existing = load_runtime_config()
     clean = {key: str(value).strip() for key, value in data.items() if key in allowed}
+    for secret_key in ("api_key", "obsidian_api_key"):
+        if clean.get(secret_key) == "********" and existing.get(secret_key):
+            clean[secret_key] = existing[secret_key]
     with open(RUNTIME_CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(clean, f, ensure_ascii=False, indent=2)
 

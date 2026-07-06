@@ -40,14 +40,15 @@ def create_app() -> Flask:
 
     @app.route("/")
     def index():
+        active = runtime_config.load_settings()
         return render_template(
             "index.html",
-            obsidian_dir=SETTINGS.obsidian_dir,
-            obsidian_rest_url=SETTINGS.obsidian_rest_url,
-            obsidian_vault_name=SETTINGS.obsidian_vault_name,
-            product_kb_dir=SETTINGS.product_kb_dir,
-            external_loops_dir=SETTINGS.external_loops_dir,
-            api_configured=bool(SETTINGS.api_key),
+            obsidian_dir=active.obsidian_dir,
+            obsidian_rest_url=active.obsidian_rest_url,
+            obsidian_vault_name=active.obsidian_vault_name,
+            product_kb_dir=active.product_kb_dir,
+            external_loops_dir=active.external_loops_dir,
+            api_configured=bool(active.api_key),
         )
 
     @app.route("/health")
@@ -220,10 +221,11 @@ def create_app() -> Flask:
 
 
 def require_basic_auth():
-    if not SETTINGS.app_password or request.path == "/health":
+    active = runtime_config.load_settings()
+    if not active.app_password or request.path == "/health":
         return None
     auth = request.authorization
-    if auth and compare_digest(auth.username or "", SETTINGS.app_username) and compare_digest(auth.password or "", SETTINGS.app_password):
+    if auth and compare_digest(auth.username or "", active.app_username) and compare_digest(auth.password or "", active.app_password):
         return None
     return Response("Authentication required", 401, {"WWW-Authenticate": 'Basic realm="ContentOps"'})
 
