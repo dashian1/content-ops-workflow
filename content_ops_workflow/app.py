@@ -78,13 +78,19 @@ def create_app() -> Flask:
             items.append({"path": rule.rule, "methods": methods, "endpoint": rule.endpoint})
         return jsonify({"ok": True, "routes": items})
 
+    @app.route("/api/model/status")
+    def model_status():
+        return jsonify(llm.status())
+
     @app.route("/api/test-llm", methods=["POST"])
     def test_llm():
         data = request.json or {}
         prompt = data.get("prompt") or "只回复：OK"
         result = llm.call_text("你是 API 连通性测试助手。", prompt, max_tokens=64)
         ok = bool(result and "API key not configured" not in result and not result.startswith("API Error") and not result.startswith("API request failed"))
-        return jsonify({"ok": ok, "result": result})
+        payload = llm.status()
+        payload.update({"ok": ok, "result": result})
+        return jsonify(payload)
 
     @app.route("/api/config", methods=["GET", "POST"])
     def runtime_settings():

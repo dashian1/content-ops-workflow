@@ -8,6 +8,17 @@ import requests
 from content_ops_workflow.config import SETTINGS
 
 
+def guess_provider(api_url: str) -> str:
+    host = urlsplit(api_url or "").netloc.lower()
+    if "deepseek" in host:
+        return "DeepSeek"
+    if "openai" in host:
+        return "OpenAI"
+    if host:
+        return "OpenAI-compatible / relay"
+    return "未配置"
+
+
 def normalize_api_url(api_url: str) -> str:
     parsed = urlsplit(api_url.rstrip("/"))
     if not parsed.scheme or not parsed.netloc:
@@ -26,6 +37,17 @@ def normalize_api_url(api_url: str) -> str:
 def is_configured() -> bool:
     key = (SETTINGS.api_key or "").strip().lower()
     return bool(key) and not key.startswith("sk-your-")
+
+
+def status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "configured": is_configured(),
+        "provider": guess_provider(SETTINGS.api_url),
+        "api_url": SETTINGS.api_url,
+        "normalized_url": normalize_api_url(SETTINGS.api_url),
+        "model": SETTINGS.model,
+    }
 
 
 def call_text(system: str, user: str, max_tokens: int = 4000) -> str:
@@ -52,4 +74,3 @@ def call_text(system: str, user: str, max_tokens: int = 4000) -> str:
         return f"API Error {response.status_code}: {response.text[:500]}"
     data = response.json()
     return data["choices"][0]["message"].get("content") or "[empty response]"
-
