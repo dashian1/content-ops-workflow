@@ -87,6 +87,14 @@
         <div><label>脚本目标</label><textarea id="scriptGoal" placeholder="例如：保留空姐晚班 vlog 外壳，生成 5 个风格候选，产品自然植入"></textarea></div>
         <div class="actions"><button class="primary" id="runAllBtn">一键跑云台</button><button id="analyzeBtn">只分析</button><button id="candidateBtn">出候选</button><button id="scriptBtn">出正式脚本</button></div>
         <div class="note">飞书：优先直连 / CLI，可用性会在状态里明确显示<br>Loop 目录：{{ external_loops_dir }}<br>产品库：{{ product_kb_dir }}</div>
+        <div class="card stack">
+          <h3>链接导入</h3>
+          <div><label>浏览器复制内容 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本，或已登录浏览器复制出来的页面内容"></textarea></div>
+          <div class="actions"><button id="importBrowserBtn">识别建档</button><button id="importLinksBtn">按链接建档</button></div>
+          <div class="row"><div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div></div>
+          <div class="row"><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div><div class="actions" style="align-items:end"><button id="importTableBtn">导入表格</button><button class="primary" id="douyinSearchBtn">抖音搜索采集</button></div></div>
+          <div class="note">采集使用独立归档，不会覆盖当前分析。搜索采集需要在弹出的抖音窗口保持登录。</div>
+        </div>
       </div>
     </section>
 
@@ -94,8 +102,8 @@
       <div class="panel-head"><span>透明流程</span><div class="actions"><button class="ghost" id="configBtn">配置</button><button class="ghost" id="refreshStatusBtn">刷新状态</button></div></div>
       <div class="panel-body">
         <div class="step-list" id="steps"></div>
-        <div class="tabs"><button class="active" data-view="analysisView">分析反推</button><button data-view="contextView">Context / Plan</button><button data-view="matchView">产品承接</button><button data-view="candidateView">候选池</button><button data-view="scriptView">脚本 / Loop</button><button data-view="reviewView">复盘</button><button data-view="pathsView">路径 / 飞书</button></div>
-        <pre id="analysisView" class="view active"></pre><pre id="contextView" class="view"></pre><pre id="matchView" class="view"></pre><div id="candidateView" class="view"><div class="candidate-grid" id="candidateCards"></div></div><pre id="scriptView" class="view"></pre><pre id="reviewView" class="view"></pre><pre id="pathsView" class="view"></pre>
+        <div class="tabs"><button class="active" data-view="analysisView">分析反推</button><button data-view="contextView">Context / Plan</button><button data-view="matchView">产品承接</button><button data-view="candidateView">候选池</button><button data-view="scriptView">脚本 / Loop</button><button data-view="reviewView">复盘</button><button data-view="pathsView">路径 / 飞书</button><button data-view="importView">导入结果</button></div>
+        <pre id="analysisView" class="view active"></pre><pre id="contextView" class="view"></pre><pre id="matchView" class="view"></pre><div id="candidateView" class="view"><div class="candidate-grid" id="candidateCards"></div></div><pre id="scriptView" class="view"></pre><pre id="reviewView" class="view"></pre><pre id="pathsView" class="view"></pre><div id="importView" class="view"><div class="candidate-grid" id="importCards"></div></div>
       </div>
     </section>
 
@@ -138,7 +146,7 @@
 const $ = id => document.getElementById(id);
 const providerDefaults = { deepseek:{url:'https://api.deepseek.com/v1',model:'deepseek-chat'}, openai:{url:'https://api.openai.com/v1',model:'gpt-4.1-mini'} };
 const stepDefs = [['input','素材输入','人工上传/粘贴爆款，保留判断理由'],['video','视频理解','提取口播、关键帧、manifest'],['analysis','分析反推','话题/选题/受众/结构/金句/剪辑风格'],['product','产品承接','只在承接阶段读取产品库，避免带偏'],['candidate','多风格候选','猎奇/反差/反反差/共鸣/生活仪式'],['loop','选中生成 Loop','完整口播拆成生产表并同步 loops'],['feishu','飞书协同','直连/CLI/待上传包，状态明确显示'],['review','数据复盘','发布后回填数据，形成下一轮迭代']];
-const state = { steps:Object.fromEntries(stepDefs.map(x=>[x[0],'idle'])), analysis:'', productMatch:'', filePath:'', candidates:[], selected:null, paths:{}, feishu:null, model:null, os:null, loopJobs:[] };
+const state = { steps:Object.fromEntries(stepDefs.map(x=>[x[0],'idle'])), analysis:'', productMatch:'', filePath:'', candidates:[], selected:null, paths:{}, feishu:null, model:null, os:null, loopJobs:[], imports:[] };
 function metricsText(){ return [`发布时间/备注: ${$('publishMeta').value.trim()}`,`播放: ${$('metricViews').value.trim()}`,`点赞: ${$('metricLikes').value.trim()}`,`评论: ${$('metricComments').value.trim()}`,`收藏: ${$('metricSaves').value.trim()}`,`转发: ${$('metricShares').value.trim()}`,`完播/转化: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n'); }
 function values(){ return { title:$('title').value.trim(), platform:$('platform').value.trim(), url:$('url').value.trim(), metrics:metricsText(), sales:$('sales').value.trim(), reason:$('reason').value.trim(), transcript:$('transcript').value.trim(), comments:$('comments').value.trim(), notes:$('notes').value.trim(), file_path:state.filePath }; }
 function setStep(id,status){ state.steps[id]=status; renderSteps(); }
@@ -163,6 +171,13 @@ function renderCandidates(){ $('candidateCards').innerHTML=state.candidates.leng
 window.selectCandidate=function(i){ state.selected=state.candidates[i]; $('candidateId').value=`${state.selected.id||''} / ${state.selected.style||''}`; $('feedbackProduct').value=state.selected.product||''; renderCandidates(); updateCards(); };
 window.exportCandidateLoop=async function(i){ state.selected=state.candidates[i]; renderCandidates(); setStep('loop','running'); const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'Loop 生成失败'); state.paths=j.paths||{}; state.feishu=j.feishu; await refreshLoopJobs(); text('scriptView',`已选中：${state.selected.id} ${state.selected.title}\n\n口播稿：\n${state.selected.oral_script||''}\n\nLoop / 飞书：\n${pathsText(j.paths,j.feishu)}`); text('pathsView',pathsText(j.paths,j.feishu)); setStep('loop','done'); setStep('feishu','done'); updateCards(); show('scriptView'); };
 async function runFeedback(){ setStep('review','running'); const [candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim()); const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('feedbackComments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),sales:$('sales').value.trim(),notes:$('feedbackNotes').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'复盘失败'); state.paths=j.paths||{}; state.feishu=j.feishu; const learning=j.learning?`\n\n## Evaluation / Evolution\n${JSON.stringify(j.learning,null,2)}`:''; text('reviewView',(j.review||'')+learning); text('pathsView',pathsText(j.paths,j.feishu)); setStep('review','done'); setStep('feishu','done'); updateCards(); show('reviewView'); }
+async function postImport(url, body){ const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const j=await r.json(); if(!j.ok)throw new Error(j.error||'导入失败'); return j; }
+function renderImports(j){ state.imports=j.videos||j.result?.videos||[]; const out=j.out_dir||j.result?.out_dir||''; $('importCards').innerHTML=state.imports.length?state.imports.map((v,i)=>`<div class="candidate"><div class="candidate-title">${i+1}. ${escapeHtml(v.platform||'')} | ${escapeHtml(v.title||v.desc||'')}</div><div class="candidate-meta">点赞 ${escapeHtml(v.like_count||0)} / 评论 ${escapeHtml(v.comment_count||0)} / 收藏 ${escapeHtml(v.collect_count||0)} / 转发 ${escapeHtml(v.share_count||0)}</div><div class="candidate-meta">${escapeHtml(v.page_url||v.video_url||'')}</div><div class="candidate-meta">归档：${escapeHtml(v.archive_dir||'')}</div><div class="candidate-actions"><button class="primary" onclick="useImport(${i})">回填到任务</button></div></div>`).join(''):`<div class="note">没有导入结果。${escapeHtml(j.status||'')}</div>`; text('pathsView',`导入目录：${out}\n\n${JSON.stringify(j,null,2)}`); show('importView'); }
+window.useImport=async function(i){ const record=state.imports[i]||{}; const j=await postImport('/api/import/form-data',{record}); const f=j.form||{}; $('title').value=f.title||$('title').value; $('platform').value=f.platform||$('platform').value; $('url').value=f.url||$('url').value; $('sales').value=f.sales||$('sales').value; state.filePath=f.file_path||state.filePath; const metrics=(f.metrics||'').split('\n'); for(const line of metrics){ const [k,...rest]=line.split(':'); const v=rest.join(':').trim(); if(k.includes('播放'))$('metricViews').value=v; if(k.includes('点赞'))$('metricLikes').value=v; if(k.includes('评论'))$('metricComments').value=v; if(k.includes('收藏'))$('metricSaves').value=v; if(k.includes('转发'))$('metricShares').value=v; if(k.includes('时长'))$('metricConversion').value=($('metricConversion').value?$('metricConversion').value+' / ':'')+v; } $('notes').value=[$('notes').value,f.notes].filter(Boolean).join('\n'); text('pathsView',`已回填：${f.title||''}\n视频路径：${f.file_path||'未下载到本地视频'}`); show('pathsView'); };
+async function runImportBrowser(){ renderImports(await postImport('/api/import/browser-text',{raw:$('importRaw').value})); }
+async function runImportLinks(){ renderImports(await postImport('/api/import/links',{raw:$('importRaw').value})); }
+async function runImportTable(){ renderImports(await postImport('/api/import/table',{table_path:$('importTablePath').value.trim()})); }
+async function runDouyinSearch(){ const start=await postImport('/api/import/douyin-search',{keyword:$('importKeyword').value.trim(),max_count:Number($('importCount').value||10)}); text('pathsView',start.message||'采集已开始'); show('pathsView'); const job=start.job_id; for(let i=0;i<180;i++){ await new Promise(r=>setTimeout(r,2000)); const r=await fetch('/api/import/status/'+encodeURIComponent(job)); const j=await r.json(); if(j.status==='done'){ renderImports(j.result||{}); return; } if((j.status||'').startsWith('error:')) throw new Error(j.status); text('pathsView',`采集状态：${j.status}`); } throw new Error('采集超时，请查看抖音窗口或稍后查询状态'); }
 async function guard(fn,btn){ setBusy(btn,true); try{ await fn(); }catch(e){ text('pathsView',e.message); show('pathsView'); }finally{ setBusy(btn,false); } }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
 $('cfgProvider').addEventListener('change',()=>{ const d=providerDefaults[$('cfgProvider').value]; if(d){ $('cfgApiUrl').value=d.url; $('cfgApiModel').value=d.model; updateEndpointPreview(); } });
@@ -182,6 +197,10 @@ $('candidateBtn').addEventListener('click',()=>guard(runCandidates,$('candidateB
 $('scriptBtn').addEventListener('click',()=>guard(runScript,$('scriptBtn')));
 $('feedbackBtn').addEventListener('click',()=>guard(runFeedback,$('feedbackBtn')));
 $('runAllBtn').addEventListener('click',()=>guard(async()=>{ await runAnalyze(); await runCandidates(); },$('runAllBtn')));
+$('importBrowserBtn').addEventListener('click',()=>guard(runImportBrowser,$('importBrowserBtn')));
+$('importLinksBtn').addEventListener('click',()=>guard(runImportLinks,$('importLinksBtn')));
+$('importTableBtn').addEventListener('click',()=>guard(runImportTable,$('importTableBtn')));
+$('douyinSearchBtn').addEventListener('click',()=>guard(runDouyinSearch,$('douyinSearchBtn')));
 renderSteps(); refreshStatus().catch(()=>{}); refreshLoopJobs().catch(()=>{});
 </script>
 </body>

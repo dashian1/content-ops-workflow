@@ -13,7 +13,7 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from content_ops_workflow import feishu, llm, notes_cli, obsidian
-from content_ops_workflow.engines import loop_engine
+from content_ops_workflow.engines import import_engine, loop_engine
 from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
@@ -123,6 +123,35 @@ def create_app() -> Flask:
     @app.route("/api/loops/jobs")
     def loops_jobs():
         return jsonify(loop_engine.list_jobs())
+
+    @app.route("/api/import/browser-text", methods=["POST"])
+    def import_browser_text():
+        data = request.json or {}
+        return jsonify(import_engine.ingest_browser_text(data.get("raw", "")))
+
+    @app.route("/api/import/links", methods=["POST"])
+    def import_links():
+        data = request.json or {}
+        return jsonify(import_engine.ingest_links(data.get("raw", "")))
+
+    @app.route("/api/import/table", methods=["POST"])
+    def import_table():
+        data = request.json or {}
+        return jsonify(import_engine.import_table(data.get("table_path", "")))
+
+    @app.route("/api/import/douyin-search", methods=["POST"])
+    def import_douyin_search():
+        data = request.json or {}
+        return jsonify(import_engine.start_douyin_search(data.get("keyword", ""), int(data.get("max_count", 10))))
+
+    @app.route("/api/import/status/<job_id>")
+    def import_search_status(job_id):
+        return jsonify(import_engine.import_status(job_id))
+
+    @app.route("/api/import/form-data", methods=["POST"])
+    def import_form_data():
+        data = request.json or {}
+        return jsonify({"ok": True, "form": import_engine.record_to_form(data.get("record") or {})})
 
     @app.route("/api/loops/status", methods=["POST"])
     def loops_status_update():
