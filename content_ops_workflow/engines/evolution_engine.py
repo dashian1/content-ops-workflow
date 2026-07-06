@@ -55,6 +55,6 @@ def _pattern_id(pattern: str, scope: str) -> str:
 
 def _confidence(feedback: dict[str, Any], evaluation: dict[str, Any]) -> float:
     views = float(evaluation.get("signals", {}).get("views", 0) or 0)
-    filled = sum(1 for key in ("likes", "comments", "saves", "completion_rate", "conversion") if str(feedback.get(key, "")).strip())
+    filled = sum(1 for key in ("likes", "comments", "saves", "completion_rate", "conversion", "sales") if str(feedback.get(key, "")).strip())
     base = min(0.8, views / 50000)
     return round(min(0.95, 0.25 + base + filled * 0.04), 3)

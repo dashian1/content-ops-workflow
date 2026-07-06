@@ -14,7 +14,7 @@ from openpyxl import Workbook
 from content_ops_workflow import llm
 from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
-from content_ops_workflow.engines import context_engine, evaluation_engine, evolution_engine, loop_engine, memory_engine, planning_engine, prompt_builder
+from content_ops_workflow.engines import comment_engine, context_engine, evaluation_engine, evolution_engine, loop_engine, memory_engine, planning_engine, prompt_builder
 from content_ops_workflow.video_understanding import VideoPackage, build_video_package, is_video
 
 
@@ -32,6 +32,8 @@ class UploadedCase:
     transcript: str
     notes: str
     file_path: str
+    sales: str = ""
+    comments: str = ""
     video_package: VideoPackage | None = None
 
 
@@ -859,8 +861,10 @@ def build_case_summary(case: UploadedCase, analysis: str = "", product_match: st
 平台: {case.platform}
 链接: {case.url}
 数据: {case.metrics}
+销量/成交: {case.sales}
 人工选择原因: {case.reason}
 口播/字幕: {(case.transcript or '')[:1200]}
+评论区: {(case.comments or '')[:1200]}
 备注: {(case.notes or '')[:800]}
 
 爆款分析摘要:
@@ -872,11 +876,12 @@ def build_case_summary(case: UploadedCase, analysis: str = "", product_match: st
 
 
 def build_operating_context(case: UploadedCase, analysis: str = "", product_match: str = "", goal: str = "") -> dict[str, Any]:
+    comment_insight = comment_engine.analyze_comments(case.comments, case.title, case.platform)
     context = context_engine.build_context(
         goal=goal,
         product=extract_section(product_match, "## 2.")[:400] if product_match else "",
         platform=case.platform,
-        audience=extract_section(analysis, "## 4.")[:400] if analysis else "",
+        audience=(extract_section(analysis, "## 4.")[:400] if analysis else "") + "\n" + json.dumps(comment_insight, ensure_ascii=False)[:800],
     )
     plan = planning_engine.build_plan(build_case_summary(case, analysis, product_match), context, goal)
     path = memory_engine.append_jsonl(
@@ -889,6 +894,7 @@ def build_operating_context(case: UploadedCase, analysis: str = "", product_matc
                 "metrics": case.metrics,
             },
             "goal": goal,
+            "comment_insight": comment_insight,
             "plan": plan,
         },
     )
@@ -901,6 +907,7 @@ def build_operating_context(case: UploadedCase, analysis: str = "", product_matc
         },
         "prompt_context": context_engine.to_prompt_block(context),
         "plan": plan,
+        "comment_insight": comment_insight,
         "memory_event": path,
     }
 

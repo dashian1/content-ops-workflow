@@ -33,6 +33,8 @@ class CaseLike(Protocol):
     reason: str
     transcript: str
     notes: str
+    sales: str
+    comments: str
 
 
 def case_block(case: CaseLike) -> str:
@@ -41,8 +43,10 @@ def case_block(case: CaseLike) -> str:
 - 平台: {case.platform or "未填写"}
 - 链接: {case.url or "未填写"}
 - 数据: {case.metrics or "未填写"}
+- 销量/成交: {getattr(case, "sales", "") or "未填写"}
 - 人工选择原因: {case.reason or "未填写"}
 - 口播/字幕: {(case.transcript or "未提供")[:3000]}
+- 评论区: {(getattr(case, "comments", "") or "未提供")[:3000]}
 - 备注: {(case.notes or "无")[:1500]}
 """
 
@@ -172,6 +176,7 @@ def build_feedback_prompt(data: dict[str, Any], evaluation: dict[str, Any] | Non
 - 转发: {data.get("shares", "")}
 - 完播率: {data.get("completion_rate", "")}
 - 转化/询单: {data.get("conversion", "")}
+- 销量/成交: {data.get("sales", "")}
 - 人工备注: {data.get("notes", "")}
 
 【机器评分】

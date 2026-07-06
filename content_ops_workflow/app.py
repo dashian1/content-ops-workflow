@@ -300,6 +300,8 @@ def form_case(file_path: str) -> UploadedCase:
         transcript=request.form.get("transcript", "").strip(),
         notes=request.form.get("notes", "").strip(),
         file_path=file_path,
+        sales=request.form.get("sales", "").strip(),
+        comments=request.form.get("comments", "").strip(),
     )
 
 
@@ -313,6 +315,8 @@ def json_case(data: dict) -> UploadedCase:
         transcript=data.get("transcript", ""),
         notes=data.get("notes", ""),
         file_path=data.get("file_path", ""),
+        sales=data.get("sales", ""),
+        comments=data.get("comments", ""),
     )
 
 
@@ -326,6 +330,8 @@ def case_to_dict(case: UploadedCase) -> dict:
         "transcript": case.transcript,
         "notes": case.notes,
         "file_path": case.file_path,
+        "sales": case.sales,
+        "comments": case.comments,
     }
 
 

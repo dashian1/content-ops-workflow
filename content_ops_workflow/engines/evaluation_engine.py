@@ -18,7 +18,7 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     likes = _num(data.get("likes"))
     comments = _num(data.get("comments"))
     saves = _num(data.get("saves"))
-    conversion = _num(data.get("conversion"))
+    conversion = _num(data.get("conversion")) + _num(data.get("sales"))
     completion = _rate(data.get("completion_rate"))
 
     like_rate = likes / views if views else 0.0
@@ -46,6 +46,7 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
             "comment_rate": comment_rate,
             "save_rate": save_rate,
             "conversion_rate": conversion_rate,
+            "sales": _num(data.get("sales")),
         },
     }
 
@@ -77,4 +78,3 @@ def _rate(value: Any) -> float:
 
 def _cap(value: float) -> float:
     return max(0.0, min(1.0, value))
-
