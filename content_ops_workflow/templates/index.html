@@ -36,8 +36,6 @@
       <div class="panel-body stack">
         <div><label>爆款链接 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本。系统先建档，能抓到视频就回填本地路径。"></textarea></div>
         <div class="actions"><button class="primary" id="importLinksBtn">粘贴链接建档</button><button id="importBrowserBtn">浏览器复制内容建档</button></div>
-        <div class="row"><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
-        <div class="actions"><button class="primary" id="douyinSearchBtn">抖音实时搜索采集</button></div>
         <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
         <div class="actions"><button id="importTableBtn">导入表格</button></div>
 
@@ -62,6 +60,14 @@
             <div><label>评论区 Top 评论</label><textarea id="comments" placeholder="先人工粘贴高赞评论、提问、质疑、购买意向评论"></textarea></div>
             <div><label>备注</label><textarea id="notes" placeholder="账号、人设、迁移方向、产品要求"></textarea></div>
             <div><label>上传视频 / 素材</label><input id="file" type="file"></div>
+          </div>
+        </details>
+        <details>
+          <summary>批量找素材 / 抖音搜索</summary>
+          <div class="details-body stack">
+            <div class="row"><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
+            <div class="actions"><button class="primary" id="douyinSearchBtn">开始搜索采集</button></div>
+            <div class="note">这个不是主流程。只有你还没确定具体爆款、想批量找素材时才用。</div>
           </div>
         </details>
         <div class="note">深度反推依赖本地视频。链接导入负责实时建档和尽量下载，下载失败就上传视频或补口播。</div>
