@@ -33,6 +33,17 @@
     }
     h1 { font-size: 18px; margin: 0; }
     .meta { color: var(--muted); font-size: 13px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+    }
     main {
       display: grid;
       grid-template-columns: 430px 1fr;
@@ -108,7 +119,10 @@
 <body>
   <header>
     <h1>内容运营 Workflow</h1>
-    <div class="meta">Obsidian：{{ obsidian_dir }} ｜ 产品库：{{ product_kb_dir }}</div>
+    <div class="meta">
+      <span class="badge" id="obsidianStatus">Obsidian 检查中</span>
+      Obsidian：{{ obsidian_vault_name }} ｜ REST：{{ obsidian_rest_url }} ｜ 产品库：{{ product_kb_dir }}
+    </div>
   </header>
   <main>
     <section class="stack">
@@ -153,6 +167,7 @@
         <div class="actions">
           <button class="primary" id="analyzeBtn">分析并沉淀 Obsidian</button>
           <button id="productBtn">查看产品库</button>
+          <button id="obsidianBtn">检查 Obsidian 插件</button>
         </div>
       </div>
       <div class="panel stack">
@@ -179,6 +194,7 @@
   <script>
     let lastAnalysis = '';
     let lastFilePath = '';
+    let lastPaths = {};
     const $ = id => document.getElementById(id);
     function values() {
       return {
@@ -194,6 +210,29 @@
     }
     function output(id, text) { $(id).textContent = text || ''; }
     function setBusy(btn, busy) { btn.disabled = busy; }
+    function formatPaths(paths) {
+      lastPaths = paths || {};
+      const lines = [];
+      Object.entries(lastPaths).forEach(([key, value]) => {
+        if (value && typeof value === 'object') {
+          lines.push(`${key}:`);
+          Object.entries(value).forEach(([k, v]) => lines.push(`  ${k}: ${v || ''}`));
+        } else {
+          lines.push(`${key}: ${value || ''}`);
+        }
+      });
+      lines.push('');
+      lines.push('可用 /api/obsidian/open 打开返回的 vault_path。');
+      return lines.join('\n');
+    }
+    async function checkObsidian() {
+      const res = await fetch('/api/obsidian/status');
+      const j = await res.json();
+      const status = $('obsidianStatus');
+      status.textContent = j.mode === 'plugin' ? 'Obsidian 插件已连接' : 'Obsidian 文件模式';
+      status.title = j.message || '';
+      return j;
+    }
     document.querySelectorAll('.tabs button').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('active', x === btn));
@@ -214,7 +253,7 @@
         lastAnalysis = j.analysis || '';
         lastFilePath = j.file_path || '';
         output('analysis', lastAnalysis);
-        output('paths', JSON.stringify(j.paths || {}, null, 2));
+        output('paths', formatPaths(j.paths || {}));
       } catch (e) {
         output('analysis', e.message);
       } finally {
@@ -234,7 +273,7 @@
         const j = await res.json();
         if (!j.ok) throw new Error(j.error || '生成失败');
         output('script', j.script || '');
-        output('paths', JSON.stringify(j.paths || {}, null, 2));
+        output('paths', formatPaths(j.paths || {}));
       } catch (e) {
         output('script', e.message);
       } finally {
@@ -247,7 +286,14 @@
       output('paths', `产品库目录：${j.dir}\n\n${j.preview || ''}`);
       document.querySelector('[data-tab="paths"]').click();
     });
+    $('obsidianBtn').addEventListener('click', async () => {
+      const j = await checkObsidian();
+      output('paths', JSON.stringify(j, null, 2));
+      document.querySelector('[data-tab="paths"]').click();
+    });
+    checkObsidian().catch(() => {
+      $('obsidianStatus').textContent = 'Obsidian 未连接';
+    });
   </script>
 </body>
 </html>
-

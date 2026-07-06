@@ -11,6 +11,7 @@ from typing import Any
 from openpyxl import Workbook
 
 from content_ops_workflow import llm
+from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS
 
 
@@ -185,16 +186,19 @@ def analyze_case(case: UploadedCase) -> str:
     )
 
 
-def write_obsidian_note(folder: str, title: str, body: str) -> str:
-    target_dir = os.path.join(SETTINGS.obsidian_dir, folder)
-    os.makedirs(target_dir, exist_ok=True)
-    path = os.path.join(target_dir, f"{time.strftime('%Y%m%d_%H%M%S')}_{safe_filename(title)}.md")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(body.strip() + "\n")
-    return path
+def write_obsidian_note(folder: str, title: str, body: str) -> dict[str, str]:
+    vault_path = f"{folder}/{time.strftime('%Y%m%d_%H%M%S')}_{safe_filename(title)}.md"
+    result = obsidian.write_note(vault_path, body)
+    return {
+        "mode": result.mode,
+        "vault_path": result.vault_path,
+        "local_path": result.local_path,
+        "open_uri": result.open_uri,
+        "error": result.error,
+    }
 
 
-def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, str]:
+def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, dict[str, str]]:
     title = case.title or "爆款素材"
     frontmatter = [
         "---",
@@ -207,9 +211,10 @@ def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, str]:
         "",
     ]
     full = "\n".join(frontmatter) + analysis
-    paths = {
+    paths: dict[str, dict[str, str]] = {
         "analysis": write_obsidian_note("01_爆款分析", title, full),
     }
+    analysis_note_name = os.path.splitext(os.path.basename(paths["analysis"]["vault_path"]))[0]
 
     card_sections = [
         ("02_话题库", "话题", "## 2. 话题"),
@@ -219,7 +224,7 @@ def deposit_to_obsidian(case: UploadedCase, analysis: str) -> dict[str, str]:
         ("06_剪辑风格库", "剪辑风格", "## 9. 剪辑风格"),
     ]
     for folder, label, marker in card_sections:
-        body = f"# {label}卡片 - {title}\n\n来源: [[{os.path.splitext(os.path.basename(paths['analysis']))[0]}]]\n\n{extract_section(analysis, marker)}"
+        body = f"# {label}卡片 - {title}\n\n来源: [[{analysis_note_name}]]\n\n{extract_section(analysis, marker)}"
         paths[label] = write_obsidian_note(folder, title, body)
     return paths
 
@@ -301,8 +306,21 @@ def save_script_and_loop(title: str, script_markdown: str) -> dict[str, str]:
     xlsx_path = os.path.join(today_dir, f"{base}_loop.xlsx")
     write_loop_csv(csv_path, rows)
     write_loop_xlsx(xlsx_path, rows)
-    shutil.copyfile(csv_path, os.path.join(SETTINGS.obsidian_dir, "08_loop生产", os.path.basename(csv_path)))
-    return {"script": script_path, "csv": csv_path, "xlsx": xlsx_path}
+    loop_vault_path = f"08_loop生产/{os.path.basename(csv_path)}"
+    loop_local_path = os.path.join(SETTINGS.obsidian_dir, "08_loop生产", os.path.basename(csv_path))
+    os.makedirs(os.path.dirname(loop_local_path), exist_ok=True)
+    shutil.copyfile(csv_path, loop_local_path)
+    return {
+        "script": script_path["local_path"],
+        "script_vault_path": script_path["vault_path"],
+        "script_open_uri": script_path["open_uri"],
+        "script_write_mode": script_path["mode"],
+        "script_write_error": script_path["error"],
+        "loop_vault_path": loop_vault_path,
+        "loop_local_path": loop_local_path,
+        "csv": csv_path,
+        "xlsx": xlsx_path,
+    }
 
 
 def parse_loop_markdown_table(markdown: str) -> list[dict[str, str]]:
@@ -347,4 +365,3 @@ def write_loop_xlsx(path: str, rows: list[dict[str, str]]) -> None:
         letter = col[0].column_letter
         ws.column_dimensions[letter].width = 18
     wb.save(path)
-

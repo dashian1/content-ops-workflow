@@ -11,6 +11,7 @@ from flask import Flask, jsonify, render_template, request
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from content_ops_workflow import obsidian
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
     UploadedCase,
@@ -32,6 +33,8 @@ def create_app() -> Flask:
         return render_template(
             "index.html",
             obsidian_dir=SETTINGS.obsidian_dir,
+            obsidian_rest_url=SETTINGS.obsidian_rest_url,
+            obsidian_vault_name=SETTINGS.obsidian_vault_name,
             product_kb_dir=SETTINGS.product_kb_dir,
             api_configured=bool(SETTINGS.api_key),
         )
@@ -43,6 +46,18 @@ def create_app() -> Flask:
     @app.route("/api/product-library")
     def product_library():
         return jsonify({"ok": True, "dir": SETTINGS.product_kb_dir, "preview": read_product_library(3000)})
+
+    @app.route("/api/obsidian/status")
+    def obsidian_status():
+        return jsonify(obsidian.plugin_status())
+
+    @app.route("/api/obsidian/open", methods=["POST"])
+    def obsidian_open():
+        data = request.json or {}
+        vault_path = data.get("vault_path", "")
+        if not vault_path:
+            return jsonify({"ok": False, "error": "缺少 vault_path"})
+        return jsonify({"ok": True, "open_uri": obsidian.open_note(vault_path)})
 
     @app.route("/api/analyze", methods=["POST"])
     def analyze():

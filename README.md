@@ -91,3 +91,44 @@ E:\灵鹤芝谷素材库\灵鹤芝谷工具矩阵\knowledge
 $env:PRODUCT_KB_DIR="E:\你的产品库目录"
 ```
 
+## Obsidian 插件级接入
+
+默认支持两种模式：
+
+1. **插件模式**：通过 Obsidian Local REST API 插件写入笔记。
+2. **文件模式**：插件不可用时，直接写入 `obsidian_vault/` 文件夹兜底。
+
+推荐插件：
+
+```text
+Obsidian Local REST API
+```
+
+配置步骤：
+
+1. 在 Obsidian 中安装并启用 Local REST API 插件。
+2. 在插件设置里复制 API Key。
+3. 启动本项目之前设置环境变量：
+
+```powershell
+$env:OBSIDIAN_API_KEY="你的 Obsidian Local REST API Key"
+$env:OBSIDIAN_REST_URL="https://127.0.0.1:27124"
+$env:OBSIDIAN_VAULT_NAME="内容运营workflow"
+```
+
+如果你的 Obsidian vault 不是本项目默认目录，也可以指定：
+
+```powershell
+$env:OBSIDIAN_VAULT_DIR="E:\你的 Obsidian Vault"
+```
+
+写入逻辑：
+
+```text
+优先调用 Local REST API 写入 vault
+失败时自动回退到本地文件写入
+```
+
+打开笔记：
+
+系统会生成 `obsidian://open` 链接，可通过 Obsidian URI 打开对应笔记。

@@ -13,6 +13,10 @@ class Settings:
     upload_dir: str
     output_dir: str
     obsidian_dir: str
+    obsidian_vault_name: str
+    obsidian_rest_url: str
+    obsidian_api_key: str
+    obsidian_open_after_write: bool
     product_kb_dir: str
     api_url: str
     api_key: str
@@ -27,6 +31,10 @@ def load_settings() -> Settings:
         upload_dir=os.path.join(ROOT, "uploads"),
         output_dir=os.path.join(ROOT, "outputs"),
         obsidian_dir=os.environ.get("OBSIDIAN_VAULT_DIR", os.path.join(ROOT, "obsidian_vault")),
+        obsidian_vault_name=os.environ.get("OBSIDIAN_VAULT_NAME", "内容运营workflow"),
+        obsidian_rest_url=os.environ.get("OBSIDIAN_REST_URL", "https://127.0.0.1:27124"),
+        obsidian_api_key=os.environ.get("OBSIDIAN_API_KEY", ""),
+        obsidian_open_after_write=os.environ.get("OBSIDIAN_OPEN_AFTER_WRITE", "").strip() == "1",
         product_kb_dir=os.environ.get(
             "PRODUCT_KB_DIR",
             os.path.join(os.path.dirname(ROOT), "灵鹤芝谷工具矩阵", "knowledge"),
@@ -57,4 +65,3 @@ def ensure_dirs() -> None:
         os.path.join(SETTINGS.obsidian_dir, "08_loop生产"),
     ]:
         os.makedirs(path, exist_ok=True)
-
