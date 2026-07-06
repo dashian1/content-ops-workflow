@@ -24,10 +24,13 @@ TABLES = {
 def status() -> dict[str, Any]:
     cli = _find_cli()
     profile = _feishu_profile()
+    cli_ready = _cli_ready(cli)
+    import_ready = bool(cli_ready)
     return {
-        "ok": bool(cli) or bool(profile.get("access_token_valid")),
-        "mode": "lark-cli" if cli else "package",
-        "cli": cli,
+        "ok": import_ready,
+        "mode": "lark-cli" if import_ready else "package",
+        "cli": " ".join(cli),
+        "cli_ready": cli_ready,
         "profile": profile,
         "default_cli": DEFAULT_LARK_CLI,
         "base_token_configured": bool(SETTINGS.feishu_base_token),
@@ -65,19 +68,23 @@ def push_payload(kind: str, payload: dict[str, Any], attachment_paths: list[str]
         result["message"] = "没有 xlsx 附件，已生成飞书待上传包。"
         return result
 
-    cli = _find_cli()
-    if not cli:
-        profile = _feishu_profile()
-        if profile.get("config_found") and not profile.get("access_token_valid"):
-            result["message"] = "找到 .feishu-cli 凭证目录，但 token 已过期；已生成待上传包。需要重新登录飞书 CLI 或提供可执行 CLI。"
-        else:
-            result["message"] = "未找到可执行 lark-cli，已生成飞书待上传包。"
+    current = status()
+    if not current.get("ok"):
+        result["message"] = f"{current.get('message')} 已保留待上传包。"
         return result
 
     title = _title(kind, payload)
     try:
         imported = import_xlsx(xlsx, title)
-        result.update({"ok": True, "mode": "lark-cli", "import": imported, "url": imported.get("url", ""), "message": "已导入飞书表格。"})
+        result.update(
+            {
+                "ok": True,
+                "mode": "lark-cli",
+                "import": imported,
+                "url": imported.get("url", ""),
+                "message": "已导入飞书表格。",
+            }
+        )
     except Exception as exc:
         result.update({"mode": "package", "message": f"飞书导入失败，已保留待上传包：{str(exc)[:1000]}"})
     return result
@@ -88,8 +95,8 @@ def import_xlsx(xlsx_path: str, title: str) -> dict[str, str]:
     if not cli:
         raise FileNotFoundError("本机没有找到 lark-cli。")
     out = _run_lark(
-        [
-            cli,
+        cli
+        + [
             "drive",
             "+import",
             "--file",
@@ -125,17 +132,31 @@ def _copy_attachments(package_dir: str, attachment_paths: list[str]) -> list[str
     return copied
 
 
-def _find_cli() -> str:
+def _find_cli() -> list[str]:
     configured = SETTINGS.feishu_cli or os.environ.get("LARK_CLI", "").strip()
     if configured and os.path.isfile(configured):
-        return configured
+        return [configured]
     for name in ("lark-cli", "lark", "feishu", "bitable"):
         path = shutil.which(name)
         if path:
-            return path
+            return [path]
     if os.path.exists(DEFAULT_LARK_CLI):
-        return DEFAULT_LARK_CLI
-    return ""
+        return [DEFAULT_LARK_CLI]
+    npx = shutil.which("npx")
+    if npx:
+        return [npx, "@larksuite/cli@latest"]
+    return []
+
+
+def _cli_ready(cli: list[str]) -> bool:
+    if not cli:
+        return False
+    try:
+        out = _run_lark(cli + ["whoami"], cwd=SETTINGS.root, timeout=60)
+        data = _first_json(out)
+        return bool(data.get("available") and data.get("tokenStatus") == "ready")
+    except Exception:
+        return False
 
 
 def _feishu_profile() -> dict[str, Any]:
@@ -173,14 +194,18 @@ def _future(value: str) -> bool:
         return False
 
 
-def _status_message(cli: str, profile: dict[str, Any]) -> str:
+def _status_message(cli: list[str], profile: dict[str, Any]) -> str:
+    if cli and _cli_ready(cli):
+        return "已找到可执行 lark-cli，当前身份可用，可以尝试导入飞书表格。"
+    if cli and profile.get("config_found"):
+        return "已找到 lark-cli，但旧 .feishu-cli token 已过期；如导入个人云文档失败，需要重新登录 user 身份。"
     if cli:
-        return "已找到可执行 lark-cli，可导入飞书表格。"
+        return "已找到 lark-cli，但身份不可用，需要先登录授权。"
     if profile.get("config_found") and profile.get("access_token_valid"):
-        return "找到 .feishu-cli 且 token 有效，但没有可执行导入命令；当前先生成待上传包。"
+        return "找到 .feishu-cli 且 token 有效，但没有找到可执行 lark-cli；当前只能生成待上传包。"
     if profile.get("config_found"):
         return "找到 .feishu-cli 凭证目录，但 token 已过期或不可用；需要重新登录飞书 CLI。"
-    return "未找到 lark-cli 或 .feishu-cli，系统会先生成待上传包。"
+    return "未找到 lark-cli 或 .feishu-cli，系统会先生成飞书待上传包。"
 
 
 def _run_lark(cmd: list[str], cwd: str, timeout: int = 900) -> str:
