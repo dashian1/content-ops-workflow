@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>??????</title>
+  <title>内容运营云台</title>
   <style>
     :root { --bg:#f4f6f8; --panel:#fff; --text:#1f2328; --muted:#667085; --line:#d9dee7; --primary:#1768d1; --good:#16794c; --warn:#a15c07; --bad:#b42318; --chip:#f1f5f9; --soft:#edf4ff; }
     * { box-sizing:border-box; }
@@ -29,19 +29,28 @@
     .step-list,.cards,.candidate-grid { display:grid; gap:8px; }
     .step { display:grid; grid-template-columns:28px 1fr auto; gap:10px; padding:10px; border:1px solid var(--line); border-radius:8px; background:#fff; }
     .dot { width:24px; height:24px; display:grid; place-items:center; border-radius:50%; background:var(--chip); color:var(--muted); font-size:12px; font-weight:700; }
-    .step.done .dot { background:#dcfce7; color:var(--good); } .step.running .dot { background:var(--soft); color:var(--primary); } .step.error .dot { background:#fee4e2; color:var(--bad); }
-    .step-title { font-weight:650; font-size:14px; } .step-desc { margin-top:3px; color:var(--muted); font-size:12px; line-height:1.45; }
-    .tabs { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 10px; } .tabs button { padding:7px 9px; font-size:13px; } .tabs button.active { background:#111827; color:#fff; border-color:#111827; }
-    .view { display:none; } .view.active { display:block; }
+    .step.done .dot { background:#dcfce7; color:var(--good); }
+    .step.running .dot { background:var(--soft); color:var(--primary); }
+    .step.error .dot { background:#fee4e2; color:var(--bad); }
+    .step-title { font-weight:650; font-size:14px; }
+    .step-desc { margin-top:3px; color:var(--muted); font-size:12px; line-height:1.45; }
+    .tabs { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 10px; }
+    .tabs button { padding:7px 9px; font-size:13px; }
+    .tabs button.active { background:#111827; color:#fff; border-color:#111827; }
+    .view { display:none; }
+    .view.active { display:block; }
     pre { margin:0; min-height:360px; max-height:calc(100vh - 205px); overflow:auto; white-space:pre-wrap; word-break:break-word; line-height:1.58; font-family:ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace; font-size:13px; background:#fbfcfd; border:1px solid var(--line); border-radius:8px; padding:12px; }
     .card,.candidate { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; }
     .card h3 { margin:0 0 7px; font-size:14px; }
     .kv,.candidate-meta,.note { color:var(--muted); font-size:12px; line-height:1.5; }
-    .kv { display:grid; gap:5px; } .kv b { color:var(--text); }
+    .kv { display:grid; gap:5px; }
+    .kv b { color:var(--text); }
     .candidate.selected { border-color:var(--primary); box-shadow:0 0 0 2px rgba(23,104,209,.12); }
     .candidate-title { font-weight:700; margin-bottom:5px; }
     .candidate-actions { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-    .status-good { color:var(--good); } .status-warn { color:var(--warn); } .status-bad { color:var(--bad); }
+    .status-good { color:var(--good); }
+    .status-warn { color:var(--warn); }
+    .status-bad { color:var(--bad); }
     .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,.32); padding:24px; z-index:10; }
     .modal .panel { max-width:780px; margin:0 auto; max-height:calc(100vh - 48px); overflow:auto; }
     @media (max-width:1180px) { .layout { grid-template-columns:1fr; } pre { max-height:520px; } }
@@ -49,90 +58,90 @@
 </head>
 <body>
   <header>
-    <h1>??????</h1>
+    <h1>内容运营云台</h1>
     <div class="top-status">
-      <span class="chip" id="apiStatus">API ???</span>
-      <span class="chip" id="obsidianStatus">Obsidian ???</span>
-      <span class="chip" id="notesCliStatus">?? CLI ???</span>
-      <span class="chip" id="feishuStatus">?????</span>
+      <span class="chip" id="apiStatus">API 检查中</span>
+      <span class="chip" id="obsidianStatus">Obsidian 检查中</span>
+      <span class="chip" id="notesCliStatus">笔记 CLI 检查中</span>
+      <span class="chip" id="feishuStatus">飞书检查中</span>
     </div>
   </header>
 
   <main class="layout">
     <section class="panel">
-      <div class="panel-head">????</div>
+      <div class="panel-head">任务输入</div>
       <div class="panel-body stack">
-        <div class="row"><div><label>??</label><input id="platform" value="??"></div><div><label>????/??</label><input id="publishMeta" placeholder="09/08 18:00"></div></div>
-        <div><label>?? / ??</label><input id="title" placeholder="??????"></div>
-        <div><label>??</label><input id="url" placeholder="????"></div>
-        <div class="triple"><div><label>??</label><input id="metricViews"></div><div><label>??</label><input id="metricLikes"></div><div><label>??</label><input id="metricComments"></div></div>
-        <div class="triple"><div><label>??</label><input id="metricSaves"></div><div><label>??</label><input id="metricShares"></div><div><label>??/??</label><input id="metricConversion"></div></div>
-        <div><label>?????</label><textarea id="reason" placeholder="????????????????"></textarea></div>
-        <div><label>?? / ??</label><textarea id="transcript" placeholder="???????????????"></textarea></div>
-        <div><label>??</label><textarea id="notes" placeholder="???????????????????"></textarea></div>
-        <div><label>???? / ??</label><input id="file" type="file"></div>
-        <div><label>????</label><textarea id="scriptGoal" placeholder="????????? vlog ????? 5 ????????????"></textarea></div>
-        <div class="actions"><button class="primary" id="runAllBtn">?????</button><button id="analyzeBtn">???</button><button id="candidateBtn">???</button><button id="scriptBtn">?????</button></div>
-        <div class="note">??????? API / ??? CLI??????????<br>Loop ???{{ external_loops_dir }}<br>????{{ product_kb_dir }}</div>
+        <div class="row"><div><label>平台</label><input id="platform" value="抖音"></div><div><label>发布时间/备注</label><input id="publishMeta" placeholder="09/08 18:00"></div></div>
+        <div><label>标题 / 选题</label><input id="title" placeholder="粘贴爆款标题"></div>
+        <div><label>链接</label><input id="url" placeholder="视频链接"></div>
+        <div class="triple"><div><label>播放</label><input id="metricViews"></div><div><label>点赞</label><input id="metricLikes"></div><div><label>评论</label><input id="metricComments"></div></div>
+        <div class="triple"><div><label>收藏</label><input id="metricSaves"></div><div><label>转发</label><input id="metricShares"></div><div><label>完播/转化</label><input id="metricConversion"></div></div>
+        <div><label>为什么选它</label><textarea id="reason" placeholder="人工判断：值得拆的原因、想借的点"></textarea></div>
+        <div><label>口播 / 字幕</label><textarea id="transcript" placeholder="有就粘贴；上传视频时可自动提取"></textarea></div>
+        <div><label>备注</label><textarea id="notes" placeholder="评论区、账号、人设、迁移方向、产品要求"></textarea></div>
+        <div><label>上传视频 / 素材</label><input id="file" type="file"></div>
+        <div><label>脚本目标</label><textarea id="scriptGoal" placeholder="例如：保留空姐晚班 vlog 外壳，生成 5 个风格候选，产品自然植入"></textarea></div>
+        <div class="actions"><button class="primary" id="runAllBtn">一键跑云台</button><button id="analyzeBtn">只分析</button><button id="candidateBtn">出候选</button><button id="scriptBtn">出正式脚本</button></div>
+        <div class="note">飞书：优先直接 API / 可执行 CLI，失败则生成待上传包<br>Loop 目录：{{ external_loops_dir }}<br>产品库：{{ product_kb_dir }}</div>
       </div>
     </section>
 
     <section class="panel">
-      <div class="panel-head"><span>????</span><div class="actions"><button class="ghost" id="configBtn">??</button><button class="ghost" id="refreshStatusBtn">????</button></div></div>
+      <div class="panel-head"><span>透明流程</span><div class="actions"><button class="ghost" id="configBtn">配置</button><button class="ghost" id="refreshStatusBtn">刷新状态</button></div></div>
       <div class="panel-body">
         <div class="step-list" id="steps"></div>
-        <div class="tabs"><button class="active" data-view="analysisView">????</button><button data-view="matchView">????</button><button data-view="candidateView">???</button><button data-view="scriptView">?? / Loop</button><button data-view="reviewView">??</button><button data-view="pathsView">?? / ??</button></div>
+        <div class="tabs"><button class="active" data-view="analysisView">分析反推</button><button data-view="matchView">产品承接</button><button data-view="candidateView">候选池</button><button data-view="scriptView">脚本 / Loop</button><button data-view="reviewView">复盘</button><button data-view="pathsView">路径 / 飞书</button></div>
         <pre id="analysisView" class="view active"></pre><pre id="matchView" class="view"></pre><div id="candidateView" class="view"><div class="candidate-grid" id="candidateCards"></div></div><pre id="scriptView" class="view"></pre><pre id="reviewView" class="view"></pre><pre id="pathsView" class="view"></pre>
       </div>
     </section>
 
     <aside class="panel">
-      <div class="panel-head">?????</div>
+      <div class="panel-head">可视化卡片</div>
       <div class="panel-body cards">
-        <div class="card"><h3>????</h3><div class="kv" id="currentJudgement"><div><b>??</b> ????</div><div><b>???</b> ??????</div></div></div>
-        <div class="card"><h3>????</h3><div class="kv" id="prototypeCard"><div>??????? Source Prototype Lock?</div></div></div>
-        <div class="card"><h3>????</h3><div class="kv" id="productCard"><div>???????</div></div></div>
-        <div class="card"><h3>?? / Loop</h3><div class="kv" id="handoffCard"><div><b>??</b> ???</div><div><b>Loop</b> {{ external_loops_dir }}</div></div></div>
-        <div class="card stack"><h3>????</h3><div class="row"><input id="candidateId" placeholder="??ID/??"><input id="feedbackProduct" placeholder="??"></div><input id="videoUrl" placeholder="????"><div class="row"><input id="views" placeholder="??"><input id="completionRate" placeholder="???"></div><div class="row"><input id="likes" placeholder="??"><input id="comments" placeholder="??"></div><div class="row"><input id="saves" placeholder="??"><input id="shares" placeholder="??"></div><input id="conversion" placeholder="??/??"><textarea id="feedbackNotes" placeholder="????"></textarea><button class="primary" id="feedbackBtn">???????</button></div>
+        <div class="card"><h3>当前判断</h3><div class="kv" id="currentJudgement"><div><b>状态</b> 等待输入</div><div><b>下一步</b> 先跑分析反推</div></div></div>
+        <div class="card"><h3>源原型锁</h3><div class="kv" id="prototypeCard"><div>分析后自动抽取 Source Prototype Lock。</div></div></div>
+        <div class="card"><h3>产品承接</h3><div class="kv" id="productCard"><div>等待产品匹配。</div></div></div>
+        <div class="card"><h3>飞书 / Loop</h3><div class="kv" id="handoffCard"><div><b>飞书</b> 待检查</div><div><b>Loop</b> {{ external_loops_dir }}</div></div></div>
+        <div class="card stack"><h3>发布回填</h3><div class="row"><input id="candidateId" placeholder="候选ID/风格"><input id="feedbackProduct" placeholder="产品"></div><input id="videoUrl" placeholder="视频链接"><div class="row"><input id="views" placeholder="播放"><input id="completionRate" placeholder="完播率"></div><div class="row"><input id="likes" placeholder="点赞"><input id="comments" placeholder="评论"></div><div class="row"><input id="saves" placeholder="收藏"><input id="shares" placeholder="转发"></div><input id="conversion" placeholder="转化/询单"><textarea id="feedbackNotes" placeholder="复盘备注"></textarea><button class="primary" id="feedbackBtn">回填飞书并复盘</button></div>
       </div>
     </aside>
   </main>
 
-  <div class="modal" id="configModal"><div class="panel"><div class="panel-head"><span>????</span><button id="closeConfigBtn">??</button></div><div class="panel-body stack">
-    <div class="row"><div><label>API URL</label><input id="cfgApiUrl"></div><div><label>??</label><input id="cfgApiModel"></div></div>
-    <div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="????? runtime_config.json???? Git"></div>
-    <div class="row"><div><label>?? CLI / ??</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli ??????"></div><div><label>?? loops ??</label><input id="cfgLoopsDir"></div></div>
-    <div class="row"><div><label>?????</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
-    <div><label>???? CLI ??</label><input id="cfgNotesCli" placeholder="?? Obsidian CLI / obsidian-cli / notesmd-cli"></div>
+  <div class="modal" id="configModal"><div class="panel"><div class="panel-head"><span>运行配置</span><button id="closeConfigBtn">关闭</button></div><div class="panel-body stack">
+    <div class="row"><div><label>API URL</label><input id="cfgApiUrl"></div><div><label>模型</label><input id="cfgApiModel"></div></div>
+    <div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="保存到本地 runtime_config.json，不提交 Git"></div>
+    <div class="row"><div><label>飞书 CLI / 目录</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli 或可执行文件"></div><div><label>外部 loops 目录</label><input id="cfgLoopsDir"></div></div>
+    <div class="row"><div><label>产品库目录</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
+    <div><label>笔记软件 CLI 路径</label><input id="cfgNotesCli" placeholder="官方 Obsidian CLI / obsidian-cli / notesmd-cli"></div>
     <div><label>Obsidian Local REST API Key</label><input id="cfgObsidianKey" type="password"></div>
-    <div class="actions"><button class="primary" id="saveConfigBtn">????</button><button id="testConfigBtn">????</button><button id="openVaultBtn">?????</button><button id="revealVaultBtn">??????</button></div>
+    <div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testConfigBtn">测试状态</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div>
     <pre id="configOutput" style="min-height:120px; max-height:220px;"></pre>
   </div></div></div>
 
 <script>
 const $ = id => document.getElementById(id);
-const stepDefs = [['input','????','????/???????????'],['video','????','?????????manifest'],['analysis','????','??/??/??/??/??/????'],['product','????','????????????????'],['candidate','?????','??/??/???/??/????'],['loop','???? Loop','???????????? loops'],['feishu','????','?? xlsx ??????????'],['review','????','???????????????']];
+const stepDefs = [['input','素材输入','人工上传/粘贴爆款，保留判断理由'],['video','视频理解','提取口播、关键帧、manifest'],['analysis','分析反推','话题/选题/受众/结构/金句/剪辑风格'],['product','产品承接','只在承接阶段读取产品库，避免带偏'],['candidate','多风格候选','猎奇/反差/反反差/共鸣/生活仪式'],['loop','选中生成 Loop','完整口播拆成生产表并同步 loops'],['feishu','飞书协同','导入 xlsx 到飞书或生成待上传包'],['review','数据复盘','发布后回填数据，形成下一轮迭代']];
 const state = { steps:Object.fromEntries(stepDefs.map(x=>[x[0],'idle'])), analysis:'', productMatch:'', filePath:'', candidates:[], selected:null, paths:{}, feishu:null };
-function metricsText(){ return [`????/??: ${$('publishMeta').value.trim()}`,`??: ${$('metricViews').value.trim()}`,`??: ${$('metricLikes').value.trim()}`,`??: ${$('metricComments').value.trim()}`,`??: ${$('metricSaves').value.trim()}`,`??: ${$('metricShares').value.trim()}`,`??/??: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n'); }
+function metricsText(){ return [`发布时间/备注: ${$('publishMeta').value.trim()}`,`播放: ${$('metricViews').value.trim()}`,`点赞: ${$('metricLikes').value.trim()}`,`评论: ${$('metricComments').value.trim()}`,`收藏: ${$('metricSaves').value.trim()}`,`转发: ${$('metricShares').value.trim()}`,`完播/转化: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n'); }
 function values(){ return { title:$('title').value.trim(), platform:$('platform').value.trim(), url:$('url').value.trim(), metrics:metricsText(), reason:$('reason').value.trim(), transcript:$('transcript').value.trim(), notes:$('notes').value.trim(), file_path:state.filePath }; }
 function setStep(id,status){ state.steps[id]=status; renderSteps(); }
-function renderSteps(){ $('steps').innerHTML=stepDefs.map(([id,title,desc],i)=>{ const s=state.steps[id]; const label=s==='done'?'??':s==='running'?'???':s==='error'?'??':'??'; return `<div class="step ${s}"><div class="dot">${i+1}</div><div><div class="step-title">${title}</div><div class="step-desc">${desc}</div></div><span class="chip">${label}</span></div>`; }).join(''); }
+function renderSteps(){ $('steps').innerHTML=stepDefs.map(([id,title,desc],i)=>{ const s=state.steps[id]; const label=s==='done'?'完成':s==='running'?'运行中':s==='error'?'失败':'等待'; return `<div class="step ${s}"><div class="dot">${i+1}</div><div><div class="step-title">${title}</div><div class="step-desc">${desc}</div></div><span class="chip">${label}</span></div>`; }).join(''); }
 function show(view){ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view)); }
 function text(id,value){ $(id).textContent=value||''; } function setBusy(btn,busy){ btn.disabled=busy; }
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function pathsText(paths,feishu){ const lines=[]; const walk=(p,o)=>Object.entries(o||{}).forEach(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v)?walk(`${p}${k}.`,v):lines.push(`${p}${k}: ${Array.isArray(v)?v.join(', '):(v||'')}`)); lines.push('?? / Obsidian / Loop ??'); walk('',paths||{}); lines.push('','????'); walk('feishu.',feishu||{}); return lines.join('\n'); }
+function pathsText(paths,feishu){ const lines=[]; const walk=(p,o)=>Object.entries(o||{}).forEach(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v)?walk(`${p}${k}.`,v):lines.push(`${p}${k}: ${Array.isArray(v)?v.join(', '):(v||'')}`)); lines.push('本地 / Obsidian / Loop 路径'); walk('',paths||{}); lines.push('','飞书状态'); walk('feishu.',feishu||{}); return lines.join('\n'); }
 function extractSection(md,heading){ const i=(md||'').indexOf(heading); if(i<0)return''; const rest=md.slice(i); const m=rest.slice(heading.length).match(/\n##\s+\d+\./); return (m?rest.slice(0,heading.length+m.index):rest).trim(); }
-function updateCards(){ $('currentJudgement').innerHTML=`<div><b>??</b> ${state.analysis?'?????':'????'}</div><div><b>??</b> ${state.candidates.length} ?</div><div><b>??</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'???'}</div>`; const proto=extractSection(state.analysis,'## 0. Source Prototype Lock'); $('prototypeCard').innerHTML=proto?proto.split('\n').slice(1).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>??????? Source Prototype Lock?</div>'; const product=extractSection(state.productMatch,'## 2.'); $('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>???????</div>'; $('handoffCard').innerHTML=`<div><b>??</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'???'}</div><div><b>??</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">????</a>`:'???'}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>??</b> ${state.paths.external_xlsx?'????? loops':'????'}</div>`; }
-async function refreshStatus(){ const res=await fetch('/api/cloud/status'); const j=await res.json(); $('apiStatus').textContent=j.api_configured?'API ???':'API ???'; $('apiStatus').className=`chip ${j.api_configured?'status-good':'status-bad'}`; $('obsidianStatus').textContent=j.obsidian?.mode==='plugin'?'Obsidian ??':'Obsidian ??'; $('notesCliStatus').textContent=j.notes_cli?.ok?'?? CLI ??':'?? URI ??'; $('feishuStatus').textContent=j.feishu?.ok?'????':'?????'; state.feishu=j.feishu; updateCards(); return j; }
-async function loadConfig(){ const r=await fetch('/api/config'); const j=await r.json(); const c=j.config||{}; $('cfgApiUrl').value=c.api_url||''; $('cfgApiModel').value=c.api_model||''; $('cfgApiKey').value=c.api_key||''; $('cfgFeishuCli').value=c.feishu_cli||''; $('cfgLoopsDir').value=c.external_loops_dir||''; $('cfgProductKb').value=c.product_kb_dir||''; $('cfgObsidianDir').value=c.obsidian_vault_dir||''; $('cfgNotesCli').value=c.notes_cli||''; $('cfgObsidianKey').value=c.obsidian_api_key||''; text('configOutput',`?????${j.path}`); }
+function updateCards(){ $('currentJudgement').innerHTML=`<div><b>状态</b> ${state.analysis?'已完成分析':'等待分析'}</div><div><b>候选</b> ${state.candidates.length} 条</div><div><b>选中</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'未选中'}</div>`; const proto=extractSection(state.analysis,'## 0. Source Prototype Lock'); $('prototypeCard').innerHTML=proto?proto.split('\n').slice(1).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>分析后自动抽取 Source Prototype Lock。</div>'; const product=extractSection(state.productMatch,'## 2.'); $('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>等待产品匹配。</div>'; $('handoffCard').innerHTML=`<div><b>飞书</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'待检查'}</div><div><b>链接</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">打开飞书</a>`:'未生成'}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>同步</b> ${state.paths.external_xlsx?'已同步外部 loops':'等待生成'}</div>`; }
+async function refreshStatus(){ const res=await fetch('/api/cloud/status'); const j=await res.json(); $('apiStatus').textContent=j.api_configured?'API 已配置':'API 未配置'; $('apiStatus').className=`chip ${j.api_configured?'status-good':'status-bad'}`; $('obsidianStatus').textContent=j.obsidian?.mode==='plugin'?'Obsidian 插件':'Obsidian 文件'; $('notesCliStatus').textContent=j.notes_cli?.ok?'笔记 CLI 可用':'笔记 URI 模式'; $('feishuStatus').textContent=j.feishu?.ok?'飞书可用':'飞书待处理'; state.feishu=j.feishu; updateCards(); return j; }
+async function loadConfig(){ const r=await fetch('/api/config'); const j=await r.json(); const c=j.config||{}; $('cfgApiUrl').value=c.api_url||''; $('cfgApiModel').value=c.api_model||''; $('cfgApiKey').value=c.api_key||''; $('cfgFeishuCli').value=c.feishu_cli||''; $('cfgLoopsDir').value=c.external_loops_dir||''; $('cfgProductKb').value=c.product_kb_dir||''; $('cfgObsidianDir').value=c.obsidian_vault_dir||''; $('cfgNotesCli').value=c.notes_cli||''; $('cfgObsidianKey').value=c.obsidian_api_key||''; text('configOutput',`配置文件：${j.path}`); }
 async function saveConfig(){ const body={api_url:$('cfgApiUrl').value,api_model:$('cfgApiModel').value,api_key:$('cfgApiKey').value,feishu_cli:$('cfgFeishuCli').value,external_loops_dir:$('cfgLoopsDir').value,product_kb_dir:$('cfgProductKb').value,obsidian_vault_dir:$('cfgObsidianDir').value,notes_cli:$('cfgNotesCli').value,obsidian_api_key:$('cfgObsidianKey').value}; const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const j=await r.json(); text('configOutput',JSON.stringify(j,null,2)); await refreshStatus(); }
-async function runAnalyze(){ setStep('input','done'); setStep('video',$('file').files[0]?'running':'done'); setStep('analysis','running'); setStep('product','running'); const fd=new FormData(); Object.entries(values()).forEach(([k,v])=>fd.append(k,v)); if($('file').files[0])fd.append('file',$('file').files[0]); const res=await fetch('/api/analyze',{method:'POST',body:fd}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'????'); state.analysis=j.analysis||''; state.productMatch=j.product_match||''; state.filePath=j.file_path||''; state.paths=j.paths||{}; state.feishu=j.feishu; if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript; text('analysisView',state.analysis); text('matchView',state.productMatch); text('pathsView',pathsText(j.paths,j.feishu)); setStep('video','done'); setStep('analysis','done'); setStep('product','done'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('analysisView'); }
-async function runCandidates(){ setStep('candidate','running'); const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'??????'); state.candidates=j.candidates?.candidates||[]; state.paths=j.paths||{}; state.feishu=j.feishu; renderCandidates(); text('pathsView',pathsText(j.paths,j.feishu)); setStep('candidate',state.candidates.length?'done':'error'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('candidateView'); }
-async function runScript(){ setStep('loop','running'); const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'??????'); state.paths=j.paths||{}; state.feishu=j.feishu; text('scriptView',j.script||''); text('pathsView',pathsText(j.paths,j.feishu)); setStep('loop','done'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('scriptView'); }
-function renderCandidates(){ $('candidateCards').innerHTML=state.candidates.length?state.candidates.map((c,i)=>`<div class="candidate ${state.selected?.id===c.id?'selected':''}"><div class="candidate-title">${escapeHtml(c.id||`C${i+1}`)} ? ${escapeHtml(c.style||'')} ? ${escapeHtml(c.title||'')}</div><div class="candidate-meta">Hook?${escapeHtml(c.hook||'')}</div><div class="candidate-meta">???${escapeHtml(c.product||'')}</div><div class="candidate-meta">???${escapeHtml(c.reason_to_pick||'')}</div><div class="candidate-meta">???${escapeHtml(c.risk_note||'')}</div><div class="candidate-actions"><button onclick="selectCandidate(${i})">??</button><button class="primary" onclick="exportCandidateLoop(${i})">?? Loop / ???</button></div></div>`).join(''):'<div class="note">??????????????</div>'; }
+async function runAnalyze(){ setStep('input','done'); setStep('video',$('file').files[0]?'running':'done'); setStep('analysis','running'); setStep('product','running'); const fd=new FormData(); Object.entries(values()).forEach(([k,v])=>fd.append(k,v)); if($('file').files[0])fd.append('file',$('file').files[0]); const res=await fetch('/api/analyze',{method:'POST',body:fd}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'分析失败'); state.analysis=j.analysis||''; state.productMatch=j.product_match||''; state.filePath=j.file_path||''; state.paths=j.paths||{}; state.feishu=j.feishu; if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript; text('analysisView',state.analysis); text('matchView',state.productMatch); text('pathsView',pathsText(j.paths,j.feishu)); setStep('video','done'); setStep('analysis','done'); setStep('product','done'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('analysisView'); }
+async function runCandidates(){ setStep('candidate','running'); const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'候选生成失败'); state.candidates=j.candidates?.candidates||[]; state.paths=j.paths||{}; state.feishu=j.feishu; renderCandidates(); text('pathsView',pathsText(j.paths,j.feishu)); setStep('candidate',state.candidates.length?'done':'error'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('candidateView'); }
+async function runScript(){ setStep('loop','running'); const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'脚本生成失败'); state.paths=j.paths||{}; state.feishu=j.feishu; text('scriptView',j.script||''); text('pathsView',pathsText(j.paths,j.feishu)); setStep('loop','done'); setStep('feishu',j.feishu?.mode?'done':'idle'); updateCards(); show('scriptView'); }
+function renderCandidates(){ $('candidateCards').innerHTML=state.candidates.length?state.candidates.map((c,i)=>`<div class="candidate ${state.selected?.id===c.id?'selected':''}"><div class="candidate-title">${escapeHtml(c.id||`C${i+1}`)} · ${escapeHtml(c.style||'')} · ${escapeHtml(c.title||'')}</div><div class="candidate-meta">Hook：${escapeHtml(c.hook||'')}</div><div class="candidate-meta">产品：${escapeHtml(c.product||'')}</div><div class="candidate-meta">理由：${escapeHtml(c.reason_to_pick||'')}</div><div class="candidate-meta">风险：${escapeHtml(c.risk_note||'')}</div><div class="candidate-actions"><button onclick="selectCandidate(${i})">选中</button><button class="primary" onclick="exportCandidateLoop(${i})">生成 Loop / 推飞书</button></div></div>`).join(''):'<div class="note">还没有候选。先跑“出候选”。</div>'; }
 window.selectCandidate=function(i){ state.selected=state.candidates[i]; $('candidateId').value=`${state.selected.id||''} / ${state.selected.style||''}`; $('feedbackProduct').value=state.selected.product||''; renderCandidates(); updateCards(); };
-window.exportCandidateLoop=async function(i){ state.selected=state.candidates[i]; renderCandidates(); setStep('loop','running'); const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'Loop ????'); state.paths=j.paths||{}; state.feishu=j.feishu; text('scriptView',`????${state.selected.id} ${state.selected.title}\n\n????\n${state.selected.oral_script||''}\n\nLoop / ???\n${pathsText(j.paths,j.feishu)}`); text('pathsView',pathsText(j.paths,j.feishu)); setStep('loop','done'); setStep('feishu','done'); updateCards(); show('scriptView'); };
-async function runFeedback(){ setStep('review','running'); const [candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim()); const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('comments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),notes:$('feedbackNotes').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'????'); state.paths=j.paths||{}; state.feishu=j.feishu; text('reviewView',j.review||''); text('pathsView',pathsText(j.paths,j.feishu)); setStep('review','done'); setStep('feishu','done'); updateCards(); show('reviewView'); }
+window.exportCandidateLoop=async function(i){ state.selected=state.candidates[i]; renderCandidates(); setStep('loop','running'); const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'Loop 生成失败'); state.paths=j.paths||{}; state.feishu=j.feishu; text('scriptView',`已选中：${state.selected.id} ${state.selected.title}\n\n口播稿：\n${state.selected.oral_script||''}\n\nLoop / 飞书：\n${pathsText(j.paths,j.feishu)}`); text('pathsView',pathsText(j.paths,j.feishu)); setStep('loop','done'); setStep('feishu','done'); updateCards(); show('scriptView'); };
+async function runFeedback(){ setStep('review','running'); const [candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim()); const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('comments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),notes:$('feedbackNotes').value.trim()})}); const j=await res.json(); if(!j.ok)throw new Error(j.error||'复盘失败'); state.paths=j.paths||{}; state.feishu=j.feishu; text('reviewView',j.review||''); text('pathsView',pathsText(j.paths,j.feishu)); setStep('review','done'); setStep('feishu','done'); updateCards(); show('reviewView'); }
 async function guard(fn,btn){ setBusy(btn,true); try{ await fn(); }catch(e){ text('pathsView',e.message); show('pathsView'); }finally{ setBusy(btn,false); } }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
 $('configBtn').addEventListener('click',()=>{ $('configModal').style.display='block'; loadConfig(); });
