@@ -6,21 +6,21 @@
   <title>内容运营云台</title>
   <style>
     :root{--bg:#f4f6f8;--panel:#fff;--text:#1f2328;--muted:#667085;--line:#d9dee7;--primary:#1768d1;--good:#16794c;--bad:#b42318;--chip:#f1f5f9;--soft:#edf4ff}
-    *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
-    header{min-height:56px;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:#fff;border-bottom:1px solid var(--line);gap:12px} h1{margin:0;font-size:18px}
+    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
+    header{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}h1{margin:0;font-size:18px}
     .top-status,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.chip{display:inline-flex;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:12px;color:var(--muted)}
-    .layout{display:grid;grid-template-columns:390px minmax(560px,1fr) 360px;gap:12px;padding:12px;min-height:calc(100vh - 56px)}.panel,.card,.candidate,.config-block{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:0}
-    .panel-head{min-height:42px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650;font-size:14px;gap:10px}.panel-body,.card,.candidate,.config-block{padding:12px}
+    .layout{display:grid;grid-template-columns:230px minmax(620px,1fr) 360px;gap:12px;padding:12px;min-height:calc(100vh - 56px)}
+    .panel,.card,.component,.candidate,.config-block{background:#fff;border:1px solid var(--line);border-radius:8px;min-width:0}.panel-head{min-height:42px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650;font-size:14px;gap:10px}.panel-body,.card,.candidate,.config-block{padding:12px}
+    .nav{padding:8px;display:grid;gap:6px;align-content:start}.nav button{display:grid;grid-template-columns:24px 1fr;gap:8px;text-align:left;align-items:center;border:1px solid transparent;background:transparent}.nav button.active{background:#111827;color:#fff;border-color:#111827}.nav .num{width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--chip);color:var(--muted);font-size:12px;font-weight:700}.nav button.active .num{background:#fff;color:#111827}
     .stack{display:grid;gap:10px;align-content:start}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-    label{display:block;margin-bottom:5px;color:var(--muted);font-size:12px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;background:#fff}textarea{min-height:78px;resize:vertical}
+    label{display:block;margin-bottom:5px;color:var(--muted);font-size:12px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;background:#fff}textarea{min-height:82px;resize:vertical}
     button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:6px;padding:9px 11px;font:inherit;cursor:pointer}button.primary{background:var(--primary);border-color:var(--primary);color:#fff}button.ghost{background:var(--chip)}button:disabled{opacity:.55;cursor:wait}
-    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 10px}.tabs button{padding:7px 9px;font-size:13px}.tabs button.active{background:#111827;color:#fff;border-color:#111827}.view{display:none}.view.active{display:block}
-    pre{margin:0;min-height:360px;max-height:calc(100vh - 205px);overflow:auto;white-space:pre-wrap;word-break:break-word;line-height:1.58;font-family:ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace;font-size:13px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:12px}
-    .step-list,.cards,.candidate-grid{display:grid;gap:8px}.step{display:grid;grid-template-columns:28px 1fr auto;gap:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}.dot{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:var(--chip);color:var(--muted);font-size:12px;font-weight:700}.step.done .dot{background:#dcfce7;color:var(--good)}.step.running .dot{background:var(--soft);color:var(--primary)}.step.error .dot{background:#fee4e2;color:var(--bad)}
-    .step-title,.candidate-title{font-weight:700;font-size:14px}.step-desc,.kv,.candidate-meta,.note{color:var(--muted);font-size:12px;line-height:1.5}.kv{display:grid;gap:5px}.kv b{color:var(--text)}.candidate-actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+    .view{display:none}.view.active{display:block}.cards,.candidate-grid{display:grid;gap:8px}
+    pre{margin:0;min-height:360px;max-height:calc(100vh - 208px);overflow:auto;white-space:pre-wrap;word-break:break-word;line-height:1.58;font-family:ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace;font-size:13px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:12px}
+    .kv,.candidate-meta,.note{color:var(--muted);font-size:12px;line-height:1.5}.kv{display:grid;gap:5px}.kv b{color:var(--text)}.component-title,.candidate-title{font-weight:700;font-size:15px}.candidate-actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
     .status-good{color:var(--good)}.status-bad{color:var(--bad)}details{border:1px solid var(--line);border-radius:8px;background:#fff}summary{cursor:pointer;padding:10px 12px;font-weight:650}.details-body{padding:0 12px 12px}
     .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.32);padding:24px;z-index:10}.modal .panel{max-width:900px;margin:0 auto;max-height:calc(100vh - 48px);overflow:auto}.endpoint{padding:8px 10px;border:1px dashed var(--line);border-radius:6px;background:#fbfcfd;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;word-break:break-all}
-    @media(max-width:1180px){.layout{grid-template-columns:1fr}pre{max-height:520px}header{align-items:flex-start;flex-direction:column}}
+    @media(max-width:1180px){header{height:auto;min-height:56px;align-items:flex-start;flex-direction:column;padding:10px 12px}.layout{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}pre{max-height:520px}}
   </style>
 </head>
 <body>
@@ -30,27 +30,43 @@
       <span class="chip" id="apiStatus">模型接口检查中</span><span class="chip" id="modelStatus">模型未知</span><span class="chip" id="obsidianStatus">Obsidian 检查中</span><span class="chip" id="notesCliStatus">笔记 CLI 检查中</span><span class="chip" id="feishuStatus">飞书检查中</span>
     </div>
   </header>
+
   <main class="layout">
+    <aside class="panel nav" id="nav">
+      <button class="active" data-view="importPane"><span class="num">1</span><span>爆款导入</span></button>
+      <button data-view="assetPane"><span class="num">2</span><span>素材理解</span></button>
+      <button data-view="analysisPane"><span class="num">3</span><span>反推分析</span></button>
+      <button data-view="productPane"><span class="num">4</span><span>产品承接</span></button>
+      <button data-view="scriptPane"><span class="num">5</span><span>脚本生产</span></button>
+      <button data-view="reviewPane"><span class="num">6</span><span>复盘进化</span></button>
+      <button data-view="configPane"><span class="num">⚙</span><span>配置</span></button>
+    </aside>
+
     <section class="panel">
-      <div class="panel-head">爆款导入</div>
-      <div class="panel-body stack">
-        <div><label>爆款链接 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本。系统先建档，能抓到视频就回填本地路径。"></textarea></div>
-        <div class="actions"><button class="primary" id="importLinksBtn">粘贴链接建档</button><button id="importBrowserBtn">浏览器复制内容建档</button></div>
-        <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
-        <div class="actions"><button id="importTableBtn">导入表格</button></div>
+      <div class="panel-head"><span id="paneTitle">爆款导入</span><div class="actions"><button class="ghost" id="refreshStatusBtn">刷新状态</button></div></div>
+      <div class="panel-body">
+        <section id="importPane" class="view active stack">
+          <div class="component stack">
+            <div class="component-title">导入这条爆款</div>
+            <div><label>爆款链接 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本。系统先建档，能抓到视频就回填本地路径。"></textarea></div>
+            <div class="actions"><button class="primary" id="importLinksBtn">粘贴链接建档</button><button id="importBrowserBtn">浏览器复制内容建档</button></div>
+            <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
+            <div class="actions"><button id="importTableBtn">导入表格</button></div>
+            <details>
+              <summary>批量找素材 / 抖音搜索</summary>
+              <div class="details-body stack">
+                <div class="row"><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
+                <div class="actions"><button class="primary" id="douyinSearchBtn">开始搜索采集</button></div>
+                <div class="note">这个不是主流程。只有你还没确定具体爆款、想批量找素材时才用。</div>
+              </div>
+            </details>
+          </div>
+          <div class="candidate-grid" id="importCards"></div>
+        </section>
 
-        <div class="card stack">
-          <h3>你只需要补的判断</h3>
-          <div><label>承接产品 / 产品方向</label><input id="productIntent" placeholder="例如：高蛋白拿铁 / 灵芝茶 T8 / 先不指定"></div>
-          <div><label>销量 / 成交</label><input id="sales" placeholder="成交件数、GMV、询单、私信等"></div>
-          <div><label>为什么选它</label><textarea id="reason" placeholder="你觉得它值得拆的原因、想借的点、风险判断"></textarea></div>
-          <div><label>脚本目标</label><textarea id="scriptGoal" placeholder="例如：保留空姐晚班 vlog 外壳，生成 5 个风格候选，产品自然植入"></textarea></div>
-          <div class="actions"><button class="primary" id="runAllBtn">一键分析并出候选</button><button id="analyzeBtn">只分析</button><button id="candidateBtn">出候选</button><button id="scriptBtn">出正式脚本</button></div>
-        </div>
-
-        <details>
-          <summary>高级补充 / 抓取失败兜底</summary>
-          <div class="details-body stack">
+        <section id="assetPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">素材理解与人工补充</div>
             <div class="row"><div><label>平台</label><input id="platform" value="抖音"></div><div><label>发布时间 / 备注</label><input id="publishMeta" placeholder="09/08 18:00"></div></div>
             <div><label>标题 / 选题</label><input id="title" placeholder="导入后自动回填，失败时手动补"></div>
             <div><label>链接</label><input id="url" placeholder="视频链接"></div>
@@ -58,90 +74,130 @@
             <div class="triple"><div><label>收藏</label><input id="metricSaves"></div><div><label>转发</label><input id="metricShares"></div><div><label>完播 / 转化</label><input id="metricConversion"></div></div>
             <div><label>口播 / 字幕</label><textarea id="transcript" placeholder="本地视频会自动提取；失败时手动粘贴"></textarea></div>
             <div><label>评论区 Top 评论</label><textarea id="comments" placeholder="先人工粘贴高赞评论、提问、质疑、购买意向评论"></textarea></div>
-            <div><label>备注</label><textarea id="notes" placeholder="账号、人设、迁移方向、产品要求"></textarea></div>
             <div><label>上传视频 / 素材</label><input id="file" type="file"></div>
+            <div class="note">深度反推依赖本地视频。链接导入负责实时建档和尽量下载，下载失败就上传视频或补口播。</div>
           </div>
-        </details>
-        <details>
-          <summary>批量找素材 / 抖音搜索</summary>
-          <div class="details-body stack">
-            <div class="row"><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
-            <div class="actions"><button class="primary" id="douyinSearchBtn">开始搜索采集</button></div>
-            <div class="note">这个不是主流程。只有你还没确定具体爆款、想批量找素材时才用。</div>
-          </div>
-        </details>
-        <div class="note">深度反推依赖本地视频。链接导入负责实时建档和尽量下载，下载失败就上传视频或补口播。</div>
-      </div>
-    </section>
+        </section>
 
-    <section class="panel">
-      <div class="panel-head"><span>透明流程</span><div class="actions"><button class="ghost" id="configBtn">配置</button><button class="ghost" id="refreshStatusBtn">刷新状态</button></div></div>
-      <div class="panel-body">
-        <div class="step-list" id="steps"></div>
-        <div class="tabs"><button class="active" data-view="importView">导入结果</button><button data-view="analysisView">分析反推</button><button data-view="contextView">Context / Plan</button><button data-view="matchView">产品承接</button><button data-view="candidateView">候选池</button><button data-view="scriptView">脚本 / Loop</button><button data-view="reviewView">复盘</button><button data-view="pathsView">路径 / 飞书</button></div>
-        <div id="importView" class="view active"><div class="candidate-grid" id="importCards"></div></div>
-        <pre id="analysisView" class="view"></pre><pre id="contextView" class="view"></pre><pre id="matchView" class="view"></pre><div id="candidateView" class="view"><div class="candidate-grid" id="candidateCards"></div></div><pre id="scriptView" class="view"></pre><pre id="reviewView" class="view"></pre><pre id="pathsView" class="view"></pre>
+        <section id="analysisPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">反推分析</div>
+            <div><label>为什么选它</label><textarea id="reason" placeholder="你觉得它值得拆的原因、想借的点、风险判断"></textarea></div>
+            <div><label>备注</label><textarea id="notes" placeholder="账号、人设、迁移方向、产品要求"></textarea></div>
+            <div class="actions"><button class="primary" id="analyzeBtn">开始反推分析</button></div>
+          </div>
+          <pre id="analysisView"></pre>
+        </section>
+
+        <section id="productPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">产品承接</div>
+            <div><label>承接产品 / 产品方向</label><input id="productIntent" placeholder="例如：高蛋白拿铁 / 灵芝茶 T8 / 先不指定"></div>
+            <div><label>销量 / 成交</label><input id="sales" placeholder="成交件数、GMV、询单、私信等"></div>
+            <div class="actions"><button class="primary" id="contextBtn">生成 Context / Plan</button></div>
+          </div>
+          <pre id="matchView"></pre>
+          <pre id="contextView"></pre>
+        </section>
+
+        <section id="scriptPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">脚本生产</div>
+            <div><label>脚本目标</label><textarea id="scriptGoal" placeholder="例如：保留空姐晚班 vlog 外壳，生成 5 个风格候选，产品自然植入"></textarea></div>
+            <div class="actions"><button class="primary" id="runAllBtn">一键分析并出候选</button><button id="candidateBtn">出候选</button><button id="scriptBtn">出正式脚本</button></div>
+          </div>
+          <div class="candidate-grid" id="candidateCards"></div>
+          <pre id="scriptView"></pre>
+        </section>
+
+        <section id="reviewPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">复盘进化</div>
+            <div class="row"><input id="candidateId" placeholder="候选ID / 风格"><input id="feedbackProduct" placeholder="产品"></div>
+            <input id="videoUrl" placeholder="视频链接">
+            <div class="row"><input id="views" placeholder="播放"><input id="completionRate" placeholder="完播率"></div>
+            <div class="row"><input id="likes" placeholder="点赞"><input id="feedbackComments" placeholder="评论"></div>
+            <div class="row"><input id="saves" placeholder="收藏"><input id="shares" placeholder="转发"></div>
+            <input id="conversion" placeholder="转化 / 询单">
+            <textarea id="feedbackNotes" placeholder="复盘备注"></textarea>
+            <button class="primary" id="feedbackBtn">回填飞书并复盘</button>
+          </div>
+          <pre id="reviewView"></pre>
+        </section>
+
+        <section id="configPane" class="view stack">
+          <div class="component stack">
+            <div class="component-title">模型接口</div>
+            <div class="row"><div><label>供应商预设</label><select id="cfgProvider"><option value="">手动 / 中转站</option><option value="deepseek">DeepSeek 官方</option><option value="openai">OpenAI 兼容</option></select></div><div><label>模型名</label><input id="cfgApiModel" placeholder="deepseek-chat / gpt-4.1-mini"></div></div>
+            <div><label>API URL</label><input id="cfgApiUrl" placeholder="https://api.deepseek.com/v1"></div>
+            <div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="保存到本地 runtime_config.json，不提交 Git"></div>
+            <div><label>实际请求地址</label><div class="endpoint" id="endpointPreview">等待配置</div></div>
+            <div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testApiBtn">测试模型接口</button><button id="modelStatusBtn">读取模型状态</button></div>
+          </div>
+          <div class="component stack">
+            <div class="component-title">本地集成</div>
+            <div class="row"><div><label>飞书 CLI / 目录</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli"></div><div><label>外部 loops 目录</label><input id="cfgLoopsDir"></div></div>
+            <div class="row"><div><label>产品库目录</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
+            <div><label>笔记软件 CLI 路径</label><input id="cfgNotesCli"></div>
+            <div><label>Obsidian Local REST API Key</label><input id="cfgObsidianKey" type="password"></div>
+            <div class="actions"><button id="testConfigBtn">测试集成状态</button><button id="routesBtn">接口列表</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div>
+          </div>
+          <pre id="configOutput"></pre>
+          <pre id="pathsView"></pre>
+        </section>
       </div>
     </section>
 
     <aside class="panel">
-      <div class="panel-head">可视化卡片</div>
+      <div class="panel-head">状态卡片</div>
       <div class="panel-body cards">
+        <div class="card"><h3>当前素材</h3><div class="kv" id="assetCard"><div>等待导入。</div></div></div>
         <div class="card"><h3>当前判断</h3><div class="kv" id="currentJudgement"><div><b>状态</b> 等待导入</div><div><b>下一步</b> 粘贴爆款链接</div></div></div>
         <div class="card"><h3>模型接口</h3><div class="kv" id="modelCard"><div>等待检测。</div></div></div>
-        <div class="card"><h3>素材状态</h3><div class="kv" id="assetCard"><div>还没有本地视频。</div></div></div>
         <div class="card"><h3>Context / Plan</h3><div class="kv" id="planCard"><div>等待生成上下文。</div></div></div>
         <div class="card"><h3>产品承接</h3><div class="kv" id="productCard"><div>等待产品匹配。</div></div></div>
         <div class="card"><h3>飞书 / Loop</h3><div class="kv" id="handoffCard"><div><b>飞书</b> 待检查</div><div><b>Loop</b> {{ external_loops_dir }}</div></div></div>
         <div class="card"><h3>Loop 执行</h3><div class="kv" id="loopJobCard"><div>等待生成 Loop Job。</div></div></div>
-        <div class="card stack"><h3>发布回填</h3><div class="row"><input id="candidateId" placeholder="候选ID / 风格"><input id="feedbackProduct" placeholder="产品"></div><input id="videoUrl" placeholder="视频链接"><div class="row"><input id="views" placeholder="播放"><input id="completionRate" placeholder="完播率"></div><div class="row"><input id="likes" placeholder="点赞"><input id="feedbackComments" placeholder="评论"></div><div class="row"><input id="saves" placeholder="收藏"><input id="shares" placeholder="转发"></div><input id="conversion" placeholder="转化 / 询单"><textarea id="feedbackNotes" placeholder="复盘备注"></textarea><button class="primary" id="feedbackBtn">回填飞书并复盘</button></div>
       </div>
     </aside>
   </main>
 
-  <div class="modal" id="configModal"><div class="panel"><div class="panel-head"><span>运行配置</span><button id="closeConfigBtn">关闭</button></div><div class="panel-body stack">
-    <div class="config-block stack"><h3>模型接口</h3><div class="row"><div><label>供应商预设</label><select id="cfgProvider"><option value="">手动 / 中转站</option><option value="deepseek">DeepSeek 官方</option><option value="openai">OpenAI 兼容</option></select></div><div><label>模型名</label><input id="cfgApiModel" placeholder="deepseek-chat / gpt-4.1-mini"></div></div><div><label>API URL</label><input id="cfgApiUrl" placeholder="https://api.deepseek.com/v1"></div><div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="保存到本地 runtime_config.json，不提交 Git"></div><div><label>实际请求地址</label><div class="endpoint" id="endpointPreview">等待配置</div></div><div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testApiBtn">测试模型接口</button><button id="modelStatusBtn">读取模型状态</button></div></div>
-    <div class="config-block stack"><h3>本地集成</h3><div class="row"><div><label>飞书 CLI / 目录</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli"></div><div><label>外部 loops 目录</label><input id="cfgLoopsDir"></div></div><div class="row"><div><label>产品库目录</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div><div><label>笔记软件 CLI 路径</label><input id="cfgNotesCli"></div><div><label>Obsidian Local REST API Key</label><input id="cfgObsidianKey" type="password"></div><div class="actions"><button id="testConfigBtn">测试集成状态</button><button id="routesBtn">接口列表</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div></div>
-    <pre id="configOutput" style="min-height:120px;max-height:220px"></pre>
-  </div></div></div>
-
 <script>
 const $=id=>document.getElementById(id);
+const paneNames={importPane:'爆款导入',assetPane:'素材理解',analysisPane:'反推分析',productPane:'产品承接',scriptPane:'脚本生产',reviewPane:'复盘进化',configPane:'配置'};
 const providerDefaults={deepseek:{url:'https://api.deepseek.com/v1',model:'deepseek-chat'},openai:{url:'https://api.openai.com/v1',model:'gpt-4.1-mini'}};
-const stepDefs=[['input','链接导入','先抓实时数据，能下载视频就进入深度反推'],['video','视频理解','提取口播、关键帧、manifest'],['analysis','分析反推','话题/选题/受众/结构/金句/剪辑风格'],['product','产品承接','读取产品库，判断怎么自然植入'],['candidate','多风格候选','猎奇/反差/反反差/共鸣/生活仪式'],['loop','选中生成 Loop','完整口播拆成生产表并同步 loops'],['feishu','飞书协同','推分析、脚本、Loop、复盘'],['review','数据复盘','发布后回填数据，形成下一轮迭代']];
-const state={steps:Object.fromEntries(stepDefs.map(x=>[x[0],'idle'])),analysis:'',productMatch:'',filePath:'',candidates:[],selected:null,paths:{},feishu:null,model:null,os:null,loopJobs:[],imports:[]};
+const state={analysis:'',productMatch:'',filePath:'',candidates:[],selected:null,paths:{},feishu:null,model:null,os:null,loopJobs:[],imports:[]};
+function gotoPane(view){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view));$('paneTitle').textContent=paneNames[view]||''}
+function text(id,value){$(id).textContent=value||''}function setBusy(btn,busy){btn.disabled=busy}function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function metricsText(){return[`发布时间/备注: ${$('publishMeta').value.trim()}`,`播放: ${$('metricViews').value.trim()}`,`点赞: ${$('metricLikes').value.trim()}`,`评论: ${$('metricComments').value.trim()}`,`收藏: ${$('metricSaves').value.trim()}`,`转发: ${$('metricShares').value.trim()}`,`完播/转化: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n')}
 function values(){const product=$('productIntent').value.trim();const notes=[$('notes').value.trim(),product?`承接产品/产品方向: ${product}`:''].filter(Boolean).join('\n');return{title:$('title').value.trim(),platform:$('platform').value.trim(),url:$('url').value.trim(),metrics:metricsText(),sales:$('sales').value.trim(),reason:$('reason').value.trim(),transcript:$('transcript').value.trim(),comments:$('comments').value.trim(),notes,file_path:state.filePath}}
-function setStep(id,status){state.steps[id]=status;renderSteps()}function renderSteps(){$('steps').innerHTML=stepDefs.map(([id,title,desc],i)=>{const s=state.steps[id];const label=s==='done'?'完成':s==='running'?'运行中':s==='error'?'失败':'等待';return`<div class="step ${s}"><div class="dot">${i+1}</div><div><div class="step-title">${title}</div><div class="step-desc">${desc}</div></div><span class="chip">${label}</span></div>`}).join('')}
-function show(view){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view))}
-function text(id,value){$(id).textContent=value||''}function setBusy(btn,busy){btn.disabled=busy}function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function pathsText(paths,feishu){const lines=[];const walk=(p,o)=>Object.entries(o||{}).forEach(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v)?walk(`${p}${k}.`,v):lines.push(`${p}${k}: ${Array.isArray(v)?v.join(', '):(v||'')}`));lines.push('本地 / Obsidian / Loop 路径');walk('',paths||{});lines.push('','飞书状态');walk('feishu.',feishu||{});return lines.join('\n')}
 function extractSection(md,heading){const i=(md||'').indexOf(heading);if(i<0)return'';const rest=md.slice(i);const m=rest.slice(heading.length).match(/\n##\s+\d+\./);return(m?rest.slice(0,heading.length+m.index):rest).trim()}
 function updateEndpointPreview(){const url=$('cfgApiUrl')?.value||'';if(!$('endpointPreview'))return;try{const u=new URL(url.replace(/\/$/,''));let path=u.pathname.replace(/\/$/,'');if(path.toLowerCase().endsWith('/chat/completions')){}else if(path.toLowerCase().endsWith('/v1'))path+='/chat/completions';else path='/v1/chat/completions';u.pathname=path;$('endpointPreview').textContent=u.toString()}catch{$('endpointPreview').textContent=url?'URL 格式不完整，后端会按原样尝试':'等待配置'}}
-function updateCards(){$('currentJudgement').innerHTML=`<div><b>状态</b> ${state.analysis?'已完成分析':state.imports.length?'已导入素材':'等待导入'}</div><div><b>候选</b> ${state.candidates.length} 条</div><div><b>选中</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'未选中'}</div>`;$('assetCard').innerHTML=`<div><b>链接</b> ${escapeHtml($('url').value||'未回填')}</div><div><b>本地视频</b> ${escapeHtml(state.filePath||'未下载/未上传')}</div><div><b>导入结果</b> ${state.imports.length} 条</div>`;$('modelCard').innerHTML=state.model?`<div><b>供应商</b> ${escapeHtml(state.model.provider||'未知')}</div><div><b>模型</b> ${escapeHtml(state.model.model||'未配置')}</div><div><b>接口</b> ${escapeHtml(state.model.normalized_url||'')}</div><div><b>Key</b> ${state.model.configured?'已配置':'未配置'}</div>`:'<div>等待检测。</div>';$('planCard').innerHTML=state.os?`<div><b>策略</b> ${escapeHtml(state.os.plan?.strategy||'')}</div><div><b>Hook</b> ${escapeHtml(state.os.plan?.hook||'')}</div><div><b>时长</b> ${escapeHtml(state.os.plan?.duration||'')}</div><div><b>沉淀</b> ${escapeHtml(state.os.memory_event||'')}</div>`:'<div>等待生成上下文。</div>';const product=extractSection(state.productMatch,'## 2.');$('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>等待产品匹配。</div>';$('handoffCard').innerHTML=`<div><b>飞书</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'待检查'}</div><div><b>链接</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">打开飞书</a>`:'未生成'}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>同步</b> ${state.paths.external_xlsx?'已同步外部 loops':'等待生成'}</div>`;const latest=state.loopJobs[0];$('loopJobCard').innerHTML=latest?`<div><b>Job</b> ${escapeHtml(latest.job_id)}</div><div><b>状态</b> ${escapeHtml(latest.status)}</div><div><b>标题</b> ${escapeHtml(latest.title)}</div><div><b>路径</b> ${escapeHtml(latest.job_path)}</div>`:'<div>等待生成 Loop Job。</div>'}
+function updateCards(){$('assetCard').innerHTML=`<div><b>标题</b> ${escapeHtml($('title').value||'未回填')}</div><div><b>链接</b> ${escapeHtml($('url').value||'未回填')}</div><div><b>本地视频</b> ${escapeHtml(state.filePath||'未下载/未上传')}</div><div><b>导入结果</b> ${state.imports.length} 条</div>`;$('currentJudgement').innerHTML=`<div><b>状态</b> ${state.analysis?'已完成分析':state.imports.length?'已导入素材':'等待导入'}</div><div><b>候选</b> ${state.candidates.length} 条</div><div><b>选中</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'未选中'}</div>`;$('modelCard').innerHTML=state.model?`<div><b>供应商</b> ${escapeHtml(state.model.provider||'未知')}</div><div><b>模型</b> ${escapeHtml(state.model.model||'未配置')}</div><div><b>接口</b> ${escapeHtml(state.model.normalized_url||'')}</div><div><b>Key</b> ${state.model.configured?'已配置':'未配置'}</div>`:'<div>等待检测。</div>';$('planCard').innerHTML=state.os?`<div><b>策略</b> ${escapeHtml(state.os.plan?.strategy||'')}</div><div><b>Hook</b> ${escapeHtml(state.os.plan?.hook||'')}</div><div><b>时长</b> ${escapeHtml(state.os.plan?.duration||'')}</div><div><b>沉淀</b> ${escapeHtml(state.os.memory_event||'')}</div>`:'<div>等待生成上下文。</div>';const product=extractSection(state.productMatch,'## 2.');$('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>等待产品匹配。</div>';$('handoffCard').innerHTML=`<div><b>飞书</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'待检查'}</div><div><b>链接</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">打开飞书</a>`:'未生成'}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>同步</b> ${state.paths.external_xlsx?'已同步外部 loops':'等待生成'}</div>`;const latest=state.loopJobs[0];$('loopJobCard').innerHTML=latest?`<div><b>Job</b> ${escapeHtml(latest.job_id)}</div><div><b>状态</b> ${escapeHtml(latest.status)}</div><div><b>标题</b> ${escapeHtml(latest.title)}</div><div><b>路径</b> ${escapeHtml(latest.job_path)}</div>`:'<div>等待生成 Loop Job。</div>'}
 async function refreshModelStatus(){const r=await fetch('/api/model/status');const j=await r.json();state.model=j;$('apiStatus').textContent=j.configured?'模型接口已配置':'模型接口未配置';$('apiStatus').className=`chip ${j.configured?'status-good':'status-bad'}`;$('modelStatus').textContent=j.model?`${j.provider}: ${j.model}`:'模型未配置';updateCards();return j}
 async function refreshStatus(){const[cloud]=await Promise.all([fetch('/api/cloud/status').then(r=>r.json()),refreshModelStatus()]);$('obsidianStatus').textContent=cloud.obsidian?.mode==='plugin'?'Obsidian 插件':'Obsidian 文件';$('notesCliStatus').textContent=cloud.notes_cli?.ok?'笔记 CLI 可用':'笔记 URI 模式';$('feishuStatus').textContent=cloud.feishu?.ok?'飞书可用':'飞书待处理';state.feishu=cloud.feishu;updateCards();return cloud}
 async function refreshLoopJobs(){const r=await fetch('/api/loops/jobs');const j=await r.json();state.loopJobs=j.jobs||[];updateCards();return j}
 async function loadConfig(){const[cfg,model]=await Promise.all([fetch('/api/config').then(r=>r.json()),refreshModelStatus()]);const c=cfg.config||{};$('cfgApiUrl').value=c.api_url||model.api_url||'';$('cfgApiModel').value=c.api_model||model.model||'';$('cfgApiKey').value=c.api_key||'';$('cfgFeishuCli').value=c.feishu_cli||'';$('cfgLoopsDir').value=c.external_loops_dir||'';$('cfgProductKb').value=c.product_kb_dir||'';$('cfgObsidianDir').value=c.obsidian_vault_dir||'';$('cfgNotesCli').value=c.notes_cli||'';$('cfgObsidianKey').value=c.obsidian_api_key||'';updateEndpointPreview();text('configOutput',`配置文件：${cfg.path}\n当前模型接口：${model.normalized_url||''}`)}
 async function saveConfig(){const body={api_url:$('cfgApiUrl').value,api_model:$('cfgApiModel').value,api_key:$('cfgApiKey').value,feishu_cli:$('cfgFeishuCli').value,external_loops_dir:$('cfgLoopsDir').value,product_kb_dir:$('cfgProductKb').value,obsidian_vault_dir:$('cfgObsidianDir').value,notes_cli:$('cfgNotesCli').value,obsidian_api_key:$('cfgObsidianKey').value};const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();await refreshModelStatus();text('configOutput',JSON.stringify(j,null,2));await refreshStatus()}
-async function runAnalyze(){setStep('input','done');setStep('video',$('file').files[0]||state.filePath?'running':'done');setStep('analysis','running');setStep('product','running');const fd=new FormData();Object.entries(values()).forEach(([k,v])=>fd.append(k,v));if($('file').files[0])fd.append('file',$('file').files[0]);const res=await fetch('/api/analyze',{method:'POST',body:fd});const j=await res.json();if(!j.ok)throw new Error(j.error||'分析失败');state.analysis=j.analysis||'';state.productMatch=j.product_match||'';state.filePath=j.file_path||state.filePath;state.paths=j.paths||{};state.feishu=j.feishu;if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript;text('analysisView',state.analysis);text('matchView',state.productMatch);text('pathsView',pathsText(j.paths,j.feishu));await runContextPlan();setStep('video','done');setStep('analysis','done');setStep('product','done');setStep('feishu',j.feishu?.mode?'done':'idle');updateCards();show('analysisView')}
+async function runAnalyze(){const fd=new FormData();Object.entries(values()).forEach(([k,v])=>fd.append(k,v));if($('file').files[0])fd.append('file',$('file').files[0]);const res=await fetch('/api/analyze',{method:'POST',body:fd});const j=await res.json();if(!j.ok)throw new Error(j.error||'分析失败');state.analysis=j.analysis||'';state.productMatch=j.product_match||'';state.filePath=j.file_path||state.filePath;state.paths=j.paths||{};state.feishu=j.feishu;if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript;text('analysisView',state.analysis);text('matchView',state.productMatch);text('pathsView',pathsText(j.paths,j.feishu));await runContextPlan();updateCards();gotoPane('analysisPane')}
 async function runContextPlan(){const res=await fetch('/api/os/context',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(j.ok){state.os=j;text('contextView',JSON.stringify({context:j.context,comment_insight:j.comment_insight,plan:j.plan,memory_event:j.memory_event},null,2));updateCards()}}
-async function runCandidates(){setStep('candidate','running');const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'候选生成失败');state.candidates=j.candidates?.candidates||[];state.paths=j.paths||{};state.feishu=j.feishu;renderCandidates();text('pathsView',pathsText(j.paths,j.feishu));setStep('candidate',state.candidates.length?'done':'error');setStep('feishu',j.feishu?.mode?'done':'idle');updateCards();show('candidateView')}
-async function runScript(){setStep('loop','running');const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'脚本生成失败');state.paths=j.paths||{};state.feishu=j.feishu;text('scriptView',j.script||'');text('pathsView',pathsText(j.paths,j.feishu));await refreshLoopJobs();setStep('loop','done');setStep('feishu',j.feishu?.mode?'done':'idle');updateCards();show('scriptView')}
+async function runCandidates(){const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'候选生成失败');state.candidates=j.candidates?.candidates||[];state.paths=j.paths||{};state.feishu=j.feishu;renderCandidates();text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane')}
+async function runScript(){const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'脚本生成失败');state.paths=j.paths||{};state.feishu=j.feishu;text('scriptView',j.script||'');text('pathsView',pathsText(j.paths,j.feishu));await refreshLoopJobs();updateCards();gotoPane('scriptPane')}
 function renderCandidates(){$('candidateCards').innerHTML=state.candidates.length?state.candidates.map((c,i)=>`<div class="candidate"><div class="candidate-title">${escapeHtml(c.id||`C${i+1}`)} | ${escapeHtml(c.style||'')} | ${escapeHtml(c.title||'')}</div><div class="candidate-meta">Hook：${escapeHtml(c.hook||'')}</div><div class="candidate-meta">产品：${escapeHtml(c.product||'')}</div><div class="candidate-meta">理由：${escapeHtml(c.reason_to_pick||'')}</div><div class="candidate-meta">风险：${escapeHtml(c.risk_note||'')}</div><div class="candidate-actions"><button onclick="selectCandidate(${i})">选中</button><button class="primary" onclick="exportCandidateLoop(${i})">生成 Loop / 推飞书</button></div></div>`).join(''):'<div class="note">还没有候选。先跑“出候选”。</div>'}
 window.selectCandidate=function(i){state.selected=state.candidates[i];$('candidateId').value=`${state.selected.id||''} / ${state.selected.style||''}`;$('feedbackProduct').value=state.selected.product||'';renderCandidates();updateCards()}
-window.exportCandidateLoop=async function(i){state.selected=state.candidates[i];setStep('loop','running');const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})});const j=await res.json();if(!j.ok)throw new Error(j.error||'Loop 生成失败');state.paths=j.paths||{};state.feishu=j.feishu;await refreshLoopJobs();text('scriptView',`已选中：${state.selected.id} ${state.selected.title}\n\n口播稿：\n${state.selected.oral_script||''}\n\nLoop / 飞书：\n${pathsText(j.paths,j.feishu)}`);text('pathsView',pathsText(j.paths,j.feishu));setStep('loop','done');setStep('feishu','done');updateCards();show('scriptView')}
-async function runFeedback(){setStep('review','running');const[candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim());const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('feedbackComments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),sales:$('sales').value.trim(),notes:$('feedbackNotes').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'复盘失败');state.paths=j.paths||{};state.feishu=j.feishu;const learning=j.learning?`\n\n## Evaluation / Evolution\n${JSON.stringify(j.learning,null,2)}`:'';text('reviewView',(j.review||'')+learning);text('pathsView',pathsText(j.paths,j.feishu));setStep('review','done');setStep('feishu','done');updateCards();show('reviewView')}
+window.exportCandidateLoop=async function(i){state.selected=state.candidates[i];const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})});const j=await res.json();if(!j.ok)throw new Error(j.error||'Loop 生成失败');state.paths=j.paths||{};state.feishu=j.feishu;await refreshLoopJobs();text('scriptView',`已选中：${state.selected.id} ${state.selected.title}\n\n口播稿：\n${state.selected.oral_script||''}\n\nLoop / 飞书：\n${pathsText(j.paths,j.feishu)}`);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane')}
+async function runFeedback(){const[candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim());const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('feedbackComments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),sales:$('sales').value.trim(),notes:$('feedbackNotes').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'复盘失败');state.paths=j.paths||{};state.feishu=j.feishu;const learning=j.learning?`\n\n## Evaluation / Evolution\n${JSON.stringify(j.learning,null,2)}`:'';text('reviewView',(j.review||'')+learning);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('reviewPane')}
 async function postImport(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||'导入失败');return j}
-function renderImports(j){state.imports=j.videos||j.result?.videos||[];const out=j.out_dir||j.result?.out_dir||'';$('importCards').innerHTML=state.imports.length?state.imports.map((v,i)=>`<div class="candidate"><div class="candidate-title">${i+1}. ${escapeHtml(v.platform||'')} | ${escapeHtml(v.title||v.desc||'')}</div><div class="candidate-meta">点赞 ${escapeHtml(v.like_count||0)} / 评论 ${escapeHtml(v.comment_count||0)} / 收藏 ${escapeHtml(v.collect_count||0)} / 转发 ${escapeHtml(v.share_count||0)}</div><div class="candidate-meta">${escapeHtml(v.page_url||v.video_url||'')}</div><div class="candidate-meta">本地视频：${escapeHtml(v.file_path||'未下载')}</div><div class="candidate-meta">归档：${escapeHtml(v.archive_dir||'')}</div><div class="candidate-actions"><button class="primary" onclick="useImport(${i})">回填到任务</button></div></div>`).join(''):`<div class="note">没有导入结果。${escapeHtml(j.status||'')}</div>`;text('pathsView',`导入目录：${out}\n\n${JSON.stringify(j,null,2)}`);setStep('input',state.imports.length?'done':'idle');updateCards();show('importView')}
-window.useImport=async function(i){const record=state.imports[i]||{};const j=await postImport('/api/import/form-data',{record});const f=j.form||{};$('title').value=f.title||$('title').value;$('platform').value=f.platform||$('platform').value;$('url').value=f.url||$('url').value;$('sales').value=f.sales||$('sales').value;state.filePath=f.file_path||state.filePath;const metrics=(f.metrics||'').split('\n');for(const line of metrics){const[k,...rest]=line.split(':');const v=rest.join(':').trim();if(k.includes('播放'))$('metricViews').value=v;if(k.includes('点赞'))$('metricLikes').value=v;if(k.includes('评论'))$('metricComments').value=v;if(k.includes('收藏'))$('metricSaves').value=v;if(k.includes('转发'))$('metricShares').value=v;if(k.includes('时长'))$('metricConversion').value=($('metricConversion').value?$('metricConversion').value+' / ':'')+v}$('notes').value=[$('notes').value,f.notes].filter(Boolean).join('\n');text('pathsView',`已回填：${f.title||''}\n视频路径：${f.file_path||'未下载到本地视频，需要上传视频才能深度反推'}`);updateCards();show('pathsView')}
+function renderImports(j){state.imports=j.videos||j.result?.videos||[];const out=j.out_dir||j.result?.out_dir||'';$('importCards').innerHTML=state.imports.length?state.imports.map((v,i)=>`<div class="candidate"><div class="candidate-title">${i+1}. ${escapeHtml(v.platform||'')} | ${escapeHtml(v.title||v.desc||'')}</div><div class="candidate-meta">点赞 ${escapeHtml(v.like_count||0)} / 评论 ${escapeHtml(v.comment_count||0)} / 收藏 ${escapeHtml(v.collect_count||0)} / 转发 ${escapeHtml(v.share_count||0)}</div><div class="candidate-meta">${escapeHtml(v.page_url||v.video_url||'')}</div><div class="candidate-meta">本地视频：${escapeHtml(v.file_path||'未下载')}</div><div class="candidate-meta">归档：${escapeHtml(v.archive_dir||'')}</div><div class="candidate-actions"><button class="primary" onclick="useImport(${i})">回填到任务</button></div></div>`).join(''):`<div class="note">没有导入结果。${escapeHtml(j.status||'')}</div>`;text('pathsView',`导入目录：${out}\n\n${JSON.stringify(j,null,2)}`);updateCards()}
+window.useImport=async function(i){const record=state.imports[i]||{};const j=await postImport('/api/import/form-data',{record});const f=j.form||{};$('title').value=f.title||$('title').value;$('platform').value=f.platform||$('platform').value;$('url').value=f.url||$('url').value;$('sales').value=f.sales||$('sales').value;state.filePath=f.file_path||state.filePath;const metrics=(f.metrics||'').split('\n');for(const line of metrics){const[k,...rest]=line.split(':');const v=rest.join(':').trim();if(k.includes('播放'))$('metricViews').value=v;if(k.includes('点赞'))$('metricLikes').value=v;if(k.includes('评论'))$('metricComments').value=v;if(k.includes('收藏'))$('metricSaves').value=v;if(k.includes('转发'))$('metricShares').value=v;if(k.includes('时长'))$('metricConversion').value=($('metricConversion').value?$('metricConversion').value+' / ':'')+v}$('notes').value=[$('notes').value,f.notes].filter(Boolean).join('\n');text('pathsView',`已回填：${f.title||''}\n视频路径：${f.file_path||'未下载到本地视频，需要上传视频才能深度反推'}`);updateCards();gotoPane('assetPane')}
 async function runImportBrowser(){renderImports(await postImport('/api/import/browser-text',{raw:$('importRaw').value}))}async function runImportLinks(){renderImports(await postImport('/api/import/links',{raw:$('importRaw').value}))}async function runImportTable(){renderImports(await postImport('/api/import/table',{table_path:$('importTablePath').value.trim()}))}
-async function runDouyinSearch(){const start=await postImport('/api/import/douyin-search',{keyword:$('importKeyword').value.trim(),max_count:Number($('importCount').value||10)});text('pathsView',start.message||'采集已开始');show('pathsView');const job=start.job_id;for(let i=0;i<180;i++){await new Promise(r=>setTimeout(r,2000));const r=await fetch('/api/import/status/'+encodeURIComponent(job));const j=await r.json();if(j.status==='done'){renderImports(j.result||{});return}if((j.status||'').startsWith('error:'))throw new Error(j.status);text('pathsView',`采集状态：${j.status}`)}throw new Error('采集超时，请查看抖音窗口或稍后查询状态')}
-async function guard(fn,btn){setBusy(btn,true);try{await fn()}catch(e){text('pathsView',e.message);show('pathsView')}finally{setBusy(btn,false)}}
-document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));$('cfgProvider').addEventListener('change',()=>{const d=providerDefaults[$('cfgProvider').value];if(d){$('cfgApiUrl').value=d.url;$('cfgApiModel').value=d.model;updateEndpointPreview()}});$('cfgApiUrl').addEventListener('input',updateEndpointPreview);
-$('configBtn').addEventListener('click',()=>{$('configModal').style.display='block';loadConfig()});$('closeConfigBtn').addEventListener('click',()=>{$('configModal').style.display='none'});$('saveConfigBtn').addEventListener('click',()=>guard(saveConfig,$('saveConfigBtn')));$('testConfigBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshStatus(),null,2))},$('testConfigBtn')));$('testApiBtn').addEventListener('click',()=>guard(async()=>{await saveConfig();const r=await fetch('/api/test-llm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'只回复：OK'})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('testApiBtn')));$('modelStatusBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshModelStatus(),null,2))},$('modelStatusBtn')));$('routesBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/routes');text('configOutput',JSON.stringify(await r.json(),null,2))},$('routesBtn')));$('openVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/open-vault',{method:'POST'});text('configOutput',JSON.stringify(await r.json(),null,2))},$('openVaultBtn')));$('revealVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('revealVaultBtn')));
-$('refreshStatusBtn').addEventListener('click',()=>guard(async()=>{await refreshStatus();await refreshLoopJobs()},$('refreshStatusBtn')));$('analyzeBtn').addEventListener('click',()=>guard(runAnalyze,$('analyzeBtn')));$('candidateBtn').addEventListener('click',()=>guard(runCandidates,$('candidateBtn')));$('scriptBtn').addEventListener('click',()=>guard(runScript,$('scriptBtn')));$('feedbackBtn').addEventListener('click',()=>guard(runFeedback,$('feedbackBtn')));$('runAllBtn').addEventListener('click',()=>guard(async()=>{await runAnalyze();await runCandidates()},$('runAllBtn')));$('importBrowserBtn').addEventListener('click',()=>guard(runImportBrowser,$('importBrowserBtn')));$('importLinksBtn').addEventListener('click',()=>guard(runImportLinks,$('importLinksBtn')));$('importTableBtn').addEventListener('click',()=>guard(runImportTable,$('importTableBtn')));$('douyinSearchBtn').addEventListener('click',()=>guard(runDouyinSearch,$('douyinSearchBtn')));
-renderSteps();renderImports({videos:[]});refreshStatus().catch(()=>{});refreshLoopJobs().catch(()=>{});
+async function runDouyinSearch(){const start=await postImport('/api/import/douyin-search',{keyword:$('importKeyword').value.trim(),max_count:Number($('importCount').value||10)});text('pathsView',start.message||'采集已开始');gotoPane('configPane');const job=start.job_id;for(let i=0;i<180;i++){await new Promise(r=>setTimeout(r,2000));const r=await fetch('/api/import/status/'+encodeURIComponent(job));const j=await r.json();if(j.status==='done'){renderImports(j.result||{});gotoPane('importPane');return}if((j.status||'').startsWith('error:'))throw new Error(j.status);text('pathsView',`采集状态：${j.status}`)}throw new Error('采集超时，请查看抖音窗口或稍后查询状态')}
+async function guard(fn,btn){setBusy(btn,true);try{await fn()}catch(e){text('pathsView',e.message);gotoPane('configPane')}finally{setBusy(btn,false)}}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>{gotoPane(b.dataset.view);if(b.dataset.view==='configPane')loadConfig()}));$('cfgProvider').addEventListener('change',()=>{const d=providerDefaults[$('cfgProvider').value];if(d){$('cfgApiUrl').value=d.url;$('cfgApiModel').value=d.model;updateEndpointPreview()}});$('cfgApiUrl').addEventListener('input',updateEndpointPreview);
+$('saveConfigBtn').addEventListener('click',()=>guard(saveConfig,$('saveConfigBtn')));$('testConfigBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshStatus(),null,2))},$('testConfigBtn')));$('testApiBtn').addEventListener('click',()=>guard(async()=>{await saveConfig();const r=await fetch('/api/test-llm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'只回复：OK'})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('testApiBtn')));$('modelStatusBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshModelStatus(),null,2))},$('modelStatusBtn')));$('routesBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/routes');text('configOutput',JSON.stringify(await r.json(),null,2))},$('routesBtn')));$('openVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/open-vault',{method:'POST'});text('configOutput',JSON.stringify(await r.json(),null,2))},$('openVaultBtn')));$('revealVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('revealVaultBtn')));
+$('refreshStatusBtn').addEventListener('click',()=>guard(async()=>{await refreshStatus();await refreshLoopJobs()},$('refreshStatusBtn')));$('analyzeBtn').addEventListener('click',()=>guard(runAnalyze,$('analyzeBtn')));$('contextBtn').addEventListener('click',()=>guard(runContextPlan,$('contextBtn')));$('candidateBtn').addEventListener('click',()=>guard(runCandidates,$('candidateBtn')));$('scriptBtn').addEventListener('click',()=>guard(runScript,$('scriptBtn')));$('feedbackBtn').addEventListener('click',()=>guard(runFeedback,$('feedbackBtn')));$('runAllBtn').addEventListener('click',()=>guard(async()=>{await runAnalyze();await runCandidates()},$('runAllBtn')));$('importBrowserBtn').addEventListener('click',()=>guard(runImportBrowser,$('importBrowserBtn')));$('importLinksBtn').addEventListener('click',()=>guard(runImportLinks,$('importLinksBtn')));$('importTableBtn').addEventListener('click',()=>guard(runImportTable,$('importTableBtn')));$('douyinSearchBtn').addEventListener('click',()=>guard(runDouyinSearch,$('douyinSearchBtn')));
+renderImports({videos:[]});refreshStatus().catch(()=>{});refreshLoopJobs().catch(()=>{});
 </script>
 </body>
 </html>
