@@ -12,7 +12,7 @@ from flask import Flask, Response, jsonify, render_template, request
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from content_ops_workflow import feishu, notes_cli, obsidian
+from content_ops_workflow import feishu, llm, notes_cli, obsidian
 from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
 from content_ops_workflow.workflows.content_ops import (
@@ -69,6 +69,22 @@ def create_app() -> Flask:
                 "product_kb_dir": active.product_kb_dir,
             }
         )
+
+    @app.route("/api/routes")
+    def routes():
+        items = []
+        for rule in sorted(app.url_map.iter_rules(), key=lambda item: item.rule):
+            methods = sorted(method for method in rule.methods if method not in {"HEAD", "OPTIONS"})
+            items.append({"path": rule.rule, "methods": methods, "endpoint": rule.endpoint})
+        return jsonify({"ok": True, "routes": items})
+
+    @app.route("/api/test-llm", methods=["POST"])
+    def test_llm():
+        data = request.json or {}
+        prompt = data.get("prompt") or "只回复：OK"
+        result = llm.call_text("你是 API 连通性测试助手。", prompt, max_tokens=64)
+        ok = bool(result and "API key not configured" not in result and not result.startswith("API Error") and not result.startswith("API request failed"))
+        return jsonify({"ok": ok, "result": result})
 
     @app.route("/api/config", methods=["GET", "POST"])
     def runtime_settings():

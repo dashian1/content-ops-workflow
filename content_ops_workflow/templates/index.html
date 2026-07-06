@@ -114,7 +114,7 @@
     <div class="row"><div><label>产品库目录</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
     <div><label>笔记软件 CLI 路径</label><input id="cfgNotesCli" placeholder="官方 Obsidian CLI / obsidian-cli / notesmd-cli"></div>
     <div><label>Obsidian Local REST API Key</label><input id="cfgObsidianKey" type="password"></div>
-    <div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testConfigBtn">测试状态</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div>
+    <div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testConfigBtn">测试状态</button><button id="testApiBtn">测试 API</button><button id="routesBtn">接口列表</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div>
     <pre id="configOutput" style="min-height:120px; max-height:220px;"></pre>
   </div></div></div>
 
@@ -148,6 +148,8 @@ $('configBtn').addEventListener('click',()=>{ $('configModal').style.display='bl
 $('closeConfigBtn').addEventListener('click',()=>{ $('configModal').style.display='none'; });
 $('saveConfigBtn').addEventListener('click',()=>guard(saveConfig,$('saveConfigBtn')));
 $('testConfigBtn').addEventListener('click',()=>guard(async()=>{ text('configOutput',JSON.stringify(await refreshStatus(),null,2)); },$('testConfigBtn')));
+$('testApiBtn').addEventListener('click',()=>guard(async()=>{ const r=await fetch('/api/test-llm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'只回复：OK'})}); text('configOutput',JSON.stringify(await r.json(),null,2)); },$('testApiBtn')));
+$('routesBtn').addEventListener('click',()=>guard(async()=>{ const r=await fetch('/api/routes'); text('configOutput',JSON.stringify(await r.json(),null,2)); },$('routesBtn')));
 $('openVaultBtn').addEventListener('click',()=>guard(async()=>{ const r=await fetch('/api/notes-cli/open-vault',{method:'POST'}); text('configOutput',JSON.stringify(await r.json(),null,2)); },$('openVaultBtn')));
 $('revealVaultBtn').addEventListener('click',()=>guard(async()=>{ const r=await fetch('/api/notes-cli/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})}); text('configOutput',JSON.stringify(await r.json(),null,2)); },$('revealVaultBtn')));
 $('refreshStatusBtn').addEventListener('click',()=>guard(refreshStatus,$('refreshStatusBtn')));
