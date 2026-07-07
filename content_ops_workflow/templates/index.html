@@ -1,97 +1,100 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>鍐呭杩愯惀浜戝彴</title>
+  <title>内容运营云台</title>
   <style>
     :root{--bg:#f4f6f8;--panel:#fff;--text:#1f2328;--muted:#667085;--line:#d9dee7;--primary:#1768d1;--good:#16794c;--bad:#b42318;--chip:#f1f5f9;--soft:#edf4ff}
     *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
     header{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}h1{margin:0;font-size:18px}
     .top-status,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.chip{display:inline-flex;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:12px;color:var(--muted)}
     .layout{display:grid;grid-template-columns:230px minmax(620px,1fr) 360px;gap:12px;padding:12px;min-height:calc(100vh - 56px)}
-    .panel,.card,.component,.candidate,.config-block{background:#fff;border:1px solid var(--line);border-radius:8px;min-width:0}.panel-head{min-height:42px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650;font-size:14px;gap:10px}.panel-body,.card,.candidate,.config-block{padding:12px}
+    .panel,.card,.component,.candidate{background:#fff;border:1px solid var(--line);border-radius:8px;min-width:0}.panel-head{min-height:42px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650;font-size:14px;gap:10px}.panel-body,.card,.candidate,.component{padding:12px}
     .nav{padding:8px;display:grid;gap:6px;align-content:start}.nav-group{padding:8px 8px 4px;color:var(--muted);font-size:12px;font-weight:700}.nav button{display:grid;grid-template-columns:24px 1fr;gap:8px;text-align:left;align-items:center;border:1px solid transparent;background:transparent}.nav button.active{background:#111827;color:#fff;border-color:#111827}.nav .num{width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--chip);color:var(--muted);font-size:12px;font-weight:700}.nav button.active .num{background:#fff;color:#111827}
     .stack{display:grid;gap:10px;align-content:start}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     label{display:block;margin-bottom:5px;color:var(--muted);font-size:12px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;background:#fff}textarea{min-height:82px;resize:vertical}
     button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:6px;padding:9px 11px;font:inherit;cursor:pointer}button.primary{background:var(--primary);border-color:var(--primary);color:#fff}button.ghost{background:var(--chip)}button:disabled{opacity:.55;cursor:wait}
     .view{display:none}.view.active{display:block}.cards,.candidate-grid{display:grid;gap:8px}
-    pre{margin:0;min-height:360px;max-height:calc(100vh - 208px);overflow:auto;white-space:pre-wrap;word-break:break-word;line-height:1.58;font-family:ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace;font-size:13px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:12px}
+    pre{margin:0;min-height:320px;max-height:calc(100vh - 208px);overflow:auto;white-space:pre-wrap;word-break:break-word;line-height:1.58;font-family:ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace;font-size:13px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:12px}
     .kv,.candidate-meta,.note{color:var(--muted);font-size:12px;line-height:1.5}.kv{display:grid;gap:5px}.kv b{color:var(--text)}.component-title,.candidate-title{font-weight:700;font-size:15px}.candidate-actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
-    .status-good{color:var(--good)}.status-bad{color:var(--bad)}details{border:1px solid var(--line);border-radius:8px;background:#fff}summary{cursor:pointer;padding:10px 12px;font-weight:650}.details-body{padding:0 12px 12px}
-    .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.32);padding:24px;z-index:10}.modal .panel{max-width:900px;margin:0 auto;max-height:calc(100vh - 48px);overflow:auto}.endpoint{padding:8px 10px;border:1px dashed var(--line);border-radius:6px;background:#fbfcfd;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;word-break:break-all}
+    .status-good{color:var(--good)}.status-bad{color:var(--bad)}.endpoint{padding:8px 10px;border:1px dashed var(--line);border-radius:6px;background:#fbfcfd;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;word-break:break-all}
     @media(max-width:1180px){header{height:auto;min-height:56px;align-items:flex-start;flex-direction:column;padding:10px 12px}.layout{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}pre{max-height:520px}}
   </style>
 </head>
 <body>
   <header>
-    <h1>鍐呭杩愯惀浜戝彴</h1>
+    <h1>内容运营云台</h1>
     <div class="top-status">
-      <span class="chip" id="apiStatus">妯″瀷鎺ュ彛妫€鏌ヤ腑</span><span class="chip" id="modelStatus">妯″瀷鏈煡</span><span class="chip" id="obsidianStatus">Obsidian 妫€鏌ヤ腑</span><span class="chip" id="notesCliStatus">绗旇 CLI 妫€鏌ヤ腑</span><span class="chip" id="feishuStatus">椋炰功妫€鏌ヤ腑</span>
+      <span class="chip" id="apiStatus">模型接口检查中</span>
+      <span class="chip" id="modelStatus">模型未知</span>
+      <span class="chip" id="obsidianStatus">Obsidian 检查中</span>
+      <span class="chip" id="notesCliStatus">笔记 CLI 检查中</span>
+      <span class="chip" id="feishuStatus">飞书检查中</span>
     </div>
   </header>
 
   <main class="layout">
     <aside class="panel nav" id="nav">
-      <div class="nav-group">涓绘祦绋?/div>
-      <button class="active" data-view="importPane"><span class="num">1</span><span>鐖嗘瀵煎叆</span></button>
-      <button data-view="assetPane"><span class="num">2</span><span>绱犳潗鐞嗚В</span></button>
-      <button data-view="analysisPane"><span class="num">3</span><span>鍙嶆帹鍒嗘瀽</span></button>
-      <button data-view="productPane"><span class="num">4</span><span>浜у搧鎵挎帴</span></button>
-      <button data-view="scriptPane"><span class="num">5</span><span>鑴氭湰鐢熶骇</span></button>
-      <button data-view="reviewPane"><span class="num">6</span><span>澶嶇洏杩涘寲</span></button>
-      <div class="nav-group">杈呭姪</div>
-      <button data-view="discoveryPane"><span class="num">7</span><span>閫夐鍙戠幇</span></button>
-      <button data-view="batchPane"><span class="num">8</span><span>鎵归噺瀵煎叆</span></button>
-      <button data-view="knowledgePane"><span class="num">9</span><span>鐭ヨ瘑搴?/span></button>
+      <div class="nav-group">主流程</div>
+      <button class="active" data-view="importPane"><span class="num">1</span><span>爆款导入</span></button>
+      <button data-view="assetPane"><span class="num">2</span><span>素材理解</span></button>
+      <button data-view="analysisPane"><span class="num">3</span><span>反推分析</span></button>
+      <button data-view="productPane"><span class="num">4</span><span>产品承接</span></button>
+      <button data-view="scriptPane"><span class="num">5</span><span>脚本生产</span></button>
+      <button data-view="reviewPane"><span class="num">6</span><span>复盘进化</span></button>
+      <div class="nav-group">辅助</div>
+      <button data-view="discoveryPane"><span class="num">7</span><span>选题发现</span></button>
+      <button data-view="batchPane"><span class="num">8</span><span>批量导入</span></button>
+      <button data-view="knowledgePane"><span class="num">9</span><span>知识库</span></button>
       <button data-view="agentPane"><span class="num">A</span><span>Agent OS</span></button>
-      <button data-view="configPane"><span class="num">鈿?/span><span>閰嶇疆涓績</span></button>
+      <button data-view="configPane"><span class="num">⚙</span><span>配置中心</span></button>
     </aside>
 
     <section class="panel">
-      <div class="panel-head"><span id="paneTitle">鐖嗘瀵煎叆</span><div class="actions"><button class="ghost" id="refreshStatusBtn">鍒锋柊鐘舵€?/button></div></div>
+      <div class="panel-head"><span id="paneTitle">爆款导入</span><div class="actions"><button class="ghost" id="refreshStatusBtn">刷新状态</button></div></div>
       <div class="panel-body">
         <section id="importPane" class="view active stack">
           <div class="component stack">
-            <div class="component-title">瀵煎叆杩欐潯鐖嗘</div>
-            <div><label>鐖嗘閾炬帴 / 鍒嗕韩鏂囨湰</label><textarea id="importRaw" placeholder="绮樿创鎶栭煶銆佸皬绾功銆丅绔欑瓑鍒嗕韩鏂囨湰銆傜郴缁熷厛寤烘。锛岃兘鎶撳埌瑙嗛灏卞洖濉湰鍦拌矾寰勩€?></textarea></div>
-            <div class="actions"><button class="primary" id="importLinksBtn">瀵煎叆杩欐潯鐖嗘</button></div>
-            <div class="note">杩欓噷鍙鐞嗏€滃凡缁忕湅鍒扮殑涓€鏉＄垎娆锯€濄€傛壒閲忔悳绱㈠拰琛ㄦ牸瀵煎叆鍦ㄨ緟鍔╁尯銆?/div>
+            <div class="component-title">导入这条爆款</div>
+            <div><label>爆款链接 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本。系统先建档，能抓到视频就回填本地路径。"></textarea></div>
+            <div class="actions"><button class="primary" id="importLinksBtn">导入这条爆款</button></div>
+            <div class="note">这里只处理已经看到的一条爆款。批量搜索和表格导入在辅助区。</div>
           </div>
           <div class="candidate-grid" id="importCards"></div>
         </section>
 
         <section id="assetPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">绱犳潗鐞嗚В涓庝汉宸ヨˉ鍏?/div>
-            <div class="row"><div><label>骞冲彴</label><input id="platform" value="鎶栭煶"></div><div><label>鍙戝竷鏃堕棿 / 澶囨敞</label><input id="publishMeta" placeholder="09/08 18:00"></div></div>
-            <div><label>鏍囬 / 閫夐</label><input id="title" placeholder="瀵煎叆鍚庤嚜鍔ㄥ洖濉紝澶辫触鏃舵墜鍔ㄨˉ"></div>
-            <div><label>閾炬帴</label><input id="url" placeholder="瑙嗛閾炬帴"></div>
-            <div class="triple"><div><label>鎾斁</label><input id="metricViews"></div><div><label>鐐硅禐</label><input id="metricLikes"></div><div><label>璇勮</label><input id="metricComments"></div></div>
-            <div class="triple"><div><label>鏀惰棌</label><input id="metricSaves"></div><div><label>杞彂</label><input id="metricShares"></div><div><label>瀹屾挱 / 杞寲</label><input id="metricConversion"></div></div>
-            <div><label>鍙ｆ挱 / 瀛楀箷</label><textarea id="transcript" placeholder="鏈湴瑙嗛浼氳嚜鍔ㄦ彁鍙栵紱澶辫触鏃舵墜鍔ㄧ矘璐?></textarea></div>
-            <div><label>璇勮鍖?Top 璇勮</label><textarea id="comments" placeholder="鍏堜汉宸ョ矘璐撮珮璧炶瘎璁恒€佹彁闂€佽川鐤戙€佽喘涔版剰鍚戣瘎璁?></textarea></div>
-            <div><label>涓婁紶瑙嗛 / 绱犳潗</label><input id="file" type="file"></div>
-            <div class="note">娣卞害鍙嶆帹渚濊禆鏈湴瑙嗛銆傞摼鎺ュ鍏ヨ礋璐ｅ疄鏃跺缓妗ｅ拰灏介噺涓嬭浇锛屼笅杞藉け璐ュ氨涓婁紶瑙嗛鎴栬ˉ鍙ｆ挱銆?/div>
+            <div class="component-title">素材理解与人工补充</div>
+            <div class="row"><div><label>平台</label><input id="platform" value="抖音"></div><div><label>发布时间 / 备注</label><input id="publishMeta" placeholder="09/08 18:00"></div></div>
+            <div><label>标题 / 选题</label><input id="title" placeholder="导入后自动回填，失败时手动补"></div>
+            <div><label>链接</label><input id="url" placeholder="视频链接"></div>
+            <div class="triple"><div><label>播放</label><input id="metricViews"></div><div><label>点赞</label><input id="metricLikes"></div><div><label>评论</label><input id="metricComments"></div></div>
+            <div class="triple"><div><label>收藏</label><input id="metricSaves"></div><div><label>转发</label><input id="metricShares"></div><div><label>完播 / 转化</label><input id="metricConversion"></div></div>
+            <div><label>口播 / 字幕</label><textarea id="transcript" placeholder="本地视频会自动提取；失败时手动粘贴"></textarea></div>
+            <div><label>评论区 Top 评论</label><textarea id="comments" placeholder="先人工粘贴高赞评论、提问、质疑、购买意向评论"></textarea></div>
+            <div><label>上传视频 / 素材</label><input id="file" type="file"></div>
+            <div class="note">深度反推依赖本地视频。链接导入负责实时建档和尽量下载，下载失败就上传视频或补口播。</div>
           </div>
         </section>
 
         <section id="analysisPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">鍙嶆帹鍒嗘瀽</div>
-            <div><label>涓轰粈涔堥€夊畠</label><textarea id="reason" placeholder="浣犺寰楀畠鍊煎緱鎷嗙殑鍘熷洜銆佹兂鍊熺殑鐐广€侀闄╁垽鏂?></textarea></div>
-            <div><label>澶囨敞</label><textarea id="notes" placeholder="璐﹀彿銆佷汉璁俱€佽縼绉绘柟鍚戙€佷骇鍝佽姹?></textarea></div>
-            <div class="actions"><button class="primary" id="analyzeBtn">寮€濮嬪弽鎺ㄥ垎鏋?/button></div>
+            <div class="component-title">反推分析</div>
+            <div><label>为什么选它</label><textarea id="reason" placeholder="你觉得它值得拆的原因、想借的点、风险判断"></textarea></div>
+            <div><label>备注</label><textarea id="notes" placeholder="账号、人设、迁移方向、产品要求"></textarea></div>
+            <div class="actions"><button class="primary" id="analyzeBtn">开始反推分析</button></div>
           </div>
           <pre id="analysisView"></pre>
         </section>
 
         <section id="productPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">浜у搧鎵挎帴</div>
-            <div><label>鎵挎帴浜у搧 / 浜у搧鏂瑰悜</label><input id="productIntent" placeholder="渚嬪锛氶珮铔嬬櫧鎷块搧 / 鐏佃姖鑼?T8 / 鍏堜笉鎸囧畾"></div>
-            <div><label>閿€閲?/ 鎴愪氦</label><input id="sales" placeholder="鎴愪氦浠舵暟銆丟MV銆佽鍗曘€佺淇＄瓑"></div>
-            <div class="actions"><button class="primary" id="contextBtn">鐢熸垚 Context / Plan</button></div>
+            <div class="component-title">产品承接</div>
+            <div><label>承接产品 / 产品方向</label><input id="productIntent" placeholder="例如：高蛋白拿铁 / 灵芝茶 T8 / 先不指定"></div>
+            <div><label>销量 / 成交</label><input id="sales" placeholder="成交件数、GMV、询单、私信等"></div>
+            <div class="actions"><button class="primary" id="contextBtn">生成 Context / Plan</button></div>
           </div>
           <pre id="matchView"></pre>
           <pre id="contextView"></pre>
@@ -99,9 +102,9 @@
 
         <section id="scriptPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">鑴氭湰鐢熶骇</div>
-            <div><label>鑴氭湰鐩爣</label><textarea id="scriptGoal" placeholder="渚嬪锛氫繚鐣欑┖濮愭櫄鐝?vlog 澶栧３锛岀敓鎴?5 涓鏍煎€欓€夛紝浜у搧鑷劧妞嶅叆"></textarea></div>
-            <div class="actions"><button class="primary" id="runAllBtn">涓€閿垎鏋愬苟鍑哄€欓€?/button><button id="candidateBtn">鍑哄€欓€?/button><button id="scriptBtn">鍑烘寮忚剼鏈?/button></div>
+            <div class="component-title">脚本生产</div>
+            <div><label>脚本目标</label><textarea id="scriptGoal" placeholder="例如：保留空姐晚班 vlog 外壳，生成 5 个风格候选，产品自然植入"></textarea></div>
+            <div class="actions"><button class="primary" id="runAllBtn">一键分析并出候选</button><button id="candidateBtn">出候选</button><button id="scriptBtn">出正式脚本</button></div>
           </div>
           <div class="candidate-grid" id="candidateCards"></div>
           <pre id="scriptView"></pre>
@@ -109,53 +112,53 @@
 
         <section id="reviewPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">澶嶇洏杩涘寲</div>
-            <div class="row"><input id="candidateId" placeholder="鍊欓€塈D / 椋庢牸"><input id="feedbackProduct" placeholder="浜у搧"></div>
-            <input id="videoUrl" placeholder="瑙嗛閾炬帴">
-            <div class="row"><input id="views" placeholder="鎾斁"><input id="completionRate" placeholder="瀹屾挱鐜?></div>
-            <div class="row"><input id="likes" placeholder="鐐硅禐"><input id="feedbackComments" placeholder="璇勮"></div>
-            <div class="row"><input id="saves" placeholder="鏀惰棌"><input id="shares" placeholder="杞彂"></div>
-            <input id="conversion" placeholder="杞寲 / 璇㈠崟">
-            <textarea id="feedbackNotes" placeholder="澶嶇洏澶囨敞"></textarea>
-            <button class="primary" id="feedbackBtn">鍥炲～椋炰功骞跺鐩?/button>
+            <div class="component-title">复盘进化</div>
+            <div class="row"><input id="candidateId" placeholder="候选ID / 风格"><input id="feedbackProduct" placeholder="产品"></div>
+            <input id="videoUrl" placeholder="视频链接">
+            <div class="row"><input id="views" placeholder="播放"><input id="completionRate" placeholder="完播率"></div>
+            <div class="row"><input id="likes" placeholder="点赞"><input id="feedbackComments" placeholder="评论"></div>
+            <div class="row"><input id="saves" placeholder="收藏"><input id="shares" placeholder="转发"></div>
+            <input id="conversion" placeholder="转化 / 询单">
+            <textarea id="feedbackNotes" placeholder="复盘备注"></textarea>
+            <button class="primary" id="feedbackBtn">回填飞书并复盘</button>
           </div>
           <pre id="reviewView"></pre>
         </section>
 
         <section id="discoveryPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">閫夐鍙戠幇</div>
-            <div class="row"><div><label>鎶栭煶鎼滅储璇?/label><input id="importKeyword" placeholder="鍏荤敓鑼?/ 绌哄vlog"></div><div><label>鏁伴噺</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
-            <div class="actions"><button class="primary" id="douyinSearchBtn">寮€濮嬫悳绱㈤噰闆?/button></div>
-            <div class="note">鐢ㄤ簬杩樻病纭畾鍏蜂綋鐖嗘鏃舵壒閲忔壘绱犳潗銆傞€変腑鏌愭潯鍚庡啀鍥炲埌涓绘祦绋嬪弽鎺ㄣ€?/div>
+            <div class="component-title">选题发现</div>
+            <div class="row"><div><label>抖音搜索词</label><input id="importKeyword" placeholder="养生茶 / 空姐vlog"></div><div><label>数量</label><input id="importCount" type="number" min="1" max="30" value="10"></div></div>
+            <div class="actions"><button class="primary" id="douyinSearchBtn">开始搜索采集</button></div>
+            <div class="note">用于还没确定具体爆款时批量找素材。选中某条后再回到主流程反推。</div>
           </div>
         </section>
 
         <section id="batchPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">鎵归噺瀵煎叆</div>
-            <div><label>澶氶摼鎺?/ 娴忚鍣ㄥ鍒跺唴瀹?/label><textarea id="batchRaw" placeholder="涓€琛屼竴涓摼鎺ワ紝鎴栫矘璐村凡鐧诲綍娴忚鍣ㄩ噷澶嶅埗鍑烘潵鐨勯〉闈㈠唴瀹?></textarea></div>
-            <div class="actions"><button class="primary" id="batchLinksBtn">澶氶摼鎺ュ缓妗?/button><button id="importBrowserBtn">娴忚鍣ㄥ鍒跺唴瀹瑰缓妗?/button></div>
-            <div><label>琛ㄦ牸璺緞</label><input id="importTablePath" placeholder="E:\...\绱犳潗娓呭崟.xlsx / .csv"></div>
-            <div class="actions"><button id="importTableBtn">瀵煎叆琛ㄦ牸</button></div>
-            <div class="note">杩欓噷鐢ㄤ簬绱犳潗搴撳缓妗ｏ紝涓嶄唬琛ㄩ┈涓婃繁搴﹀弽鎺ㄣ€?/div>
+            <div class="component-title">批量导入</div>
+            <div><label>多链接 / 浏览器复制内容</label><textarea id="batchRaw" placeholder="一行一个链接，或粘贴已登录浏览器里复制出来的页面内容"></textarea></div>
+            <div class="actions"><button class="primary" id="batchLinksBtn">多链接建档</button><button id="importBrowserBtn">浏览器复制内容建档</button></div>
+            <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
+            <div class="actions"><button id="importTableBtn">导入表格</button></div>
+            <div class="note">这里用于素材库建档，不代表马上深度反推。</div>
           </div>
         </section>
 
         <section id="knowledgePane" class="view stack">
           <div class="component stack">
-            <div class="component-title">鐭ヨ瘑搴?/div>
-            <div class="actions"><button id="productLibraryBtn">鏌ョ湅浜у搧搴撻瑙?/button><button id="openVaultBtn2">鎵撳紑绗旇搴?/button></div>
-            <div class="note">杩欓噷鏀句骇鍝佸簱銆佺垎娆剧粨鏋勫簱銆佸疄楠屽簱鍜屽鐩?Pattern銆傚綋鍓嶅厛鎺ヤ骇鍝佸簱棰勮鍜?Obsidian 鎵撳紑銆?/div>
+            <div class="component-title">知识库</div>
+            <div class="actions"><button id="productLibraryBtn">查看产品库预览</button><button id="openVaultBtn2">打开笔记库</button></div>
+            <div class="note">这里放产品库、爆款结构库、实验库和复盘 Pattern。当前先接产品库预览和 Obsidian 打开。</div>
           </div>
           <pre id="knowledgeView"></pre>
         </section>
 
         <section id="agentPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">Agent OS 浠诲姟鍥?/div>
-            <div class="actions"><button class="primary" id="createAgentRunBtn">鐢ㄥ綋鍓嶇礌鏉愬垱寤?Agent Run</button><button id="refreshAgentRunsBtn">鍒锋柊 Run</button><button id="skillsBtn">鏌ョ湅 Skill Registry</button></div>
-            <div class="note">V1 鍏堝仛浠诲姟鍥俱€佽妭鐐圭姸鎬佸拰 Skill 鍛戒腑鍙鍖栵紱涓氬姟鎵ц浠嶅鐢ㄧ幇鏈夊伐浣滄祦鎺ュ彛銆?/div>
+            <div class="component-title">Agent OS 任务图</div>
+            <div class="actions"><button class="primary" id="createAgentRunBtn">用当前素材创建 Agent Run</button><button id="refreshAgentRunsBtn">刷新 Run</button><button id="skillsBtn">查看 Skill Registry</button></div>
+            <div class="note">V1 先做任务图、节点状态和 Skill 命中可视化；业务执行仍复用现有工作流接口。</div>
           </div>
           <div class="candidate-grid" id="agentGraph"></div>
           <pre id="agentLog"></pre>
@@ -163,20 +166,20 @@
 
         <section id="configPane" class="view stack">
           <div class="component stack">
-            <div class="component-title">妯″瀷鎺ュ彛</div>
-            <div class="row"><div><label>渚涘簲鍟嗛璁?/label><select id="cfgProvider"><option value="">鎵嬪姩 / 涓浆绔?/option><option value="deepseek">DeepSeek 瀹樻柟</option><option value="openai">OpenAI 鍏煎</option></select></div><div><label>妯″瀷鍚?/label><input id="cfgApiModel" placeholder="deepseek-chat / gpt-4.1-mini"></div></div>
+            <div class="component-title">模型接口</div>
+            <div class="row"><div><label>供应商预设</label><select id="cfgProvider"><option value="">手动 / 中转站</option><option value="deepseek">DeepSeek 官方</option><option value="openai">OpenAI 兼容</option></select></div><div><label>模型名</label><input id="cfgApiModel" placeholder="deepseek-chat / gpt-4.1-mini"></div></div>
             <div><label>API URL</label><input id="cfgApiUrl" placeholder="https://api.deepseek.com/v1"></div>
-            <div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="淇濆瓨鍒版湰鍦?runtime_config.json锛屼笉鎻愪氦 Git"></div>
-            <div><label>瀹為檯璇锋眰鍦板潃</label><div class="endpoint" id="endpointPreview">绛夊緟閰嶇疆</div></div>
-            <div class="actions"><button class="primary" id="saveConfigBtn">淇濆瓨閰嶇疆</button><button id="testApiBtn">娴嬭瘯妯″瀷鎺ュ彛</button><button id="modelStatusBtn">璇诲彇妯″瀷鐘舵€?/button></div>
+            <div><label>API Key</label><input id="cfgApiKey" type="password" placeholder="保存到本地 runtime_config.json，不提交 Git"></div>
+            <div><label>实际请求地址</label><div class="endpoint" id="endpointPreview">等待配置</div></div>
+            <div class="actions"><button class="primary" id="saveConfigBtn">保存配置</button><button id="testApiBtn">测试模型接口</button><button id="modelStatusBtn">读取模型状态</button></div>
           </div>
           <div class="component stack">
-            <div class="component-title">鏈湴闆嗘垚</div>
-            <div class="row"><div><label>椋炰功 CLI / 鐩綍</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli"></div><div><label>澶栭儴 loops 鐩綍</label><input id="cfgLoopsDir"></div></div>
-            <div class="row"><div><label>浜у搧搴撶洰褰?/label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
-            <div><label>绗旇杞欢 CLI 璺緞</label><input id="cfgNotesCli"></div>
+            <div class="component-title">本地集成</div>
+            <div class="row"><div><label>飞书 CLI / 目录</label><input id="cfgFeishuCli" placeholder="C:\Users\gba\.feishu-cli"></div><div><label>外部 loops 目录</label><input id="cfgLoopsDir"></div></div>
+            <div class="row"><div><label>产品库目录</label><input id="cfgProductKb"></div><div><label>Obsidian Vault</label><input id="cfgObsidianDir"></div></div>
+            <div><label>笔记软件 CLI 路径</label><input id="cfgNotesCli"></div>
             <div><label>Obsidian Local REST API Key</label><input id="cfgObsidianKey" type="password"></div>
-            <div class="actions"><button id="testConfigBtn">娴嬭瘯闆嗘垚鐘舵€?/button><button id="routesBtn">鎺ュ彛鍒楄〃</button><button id="openVaultBtn">鎵撳紑绗旇搴?/button><button id="revealVaultBtn">鎵撳紑绗旇鐩綍</button></div>
+            <div class="actions"><button id="testConfigBtn">测试集成状态</button><button id="routesBtn">接口列表</button><button id="openVaultBtn">打开笔记库</button><button id="revealVaultBtn">打开笔记目录</button></div>
           </div>
           <pre id="configOutput"></pre>
           <pre id="pathsView"></pre>
@@ -185,52 +188,52 @@
     </section>
 
     <aside class="panel">
-      <div class="panel-head">鐘舵€佸崱鐗?/div>
+      <div class="panel-head">状态卡片</div>
       <div class="panel-body cards">
-        <div class="card"><h3>褰撳墠绱犳潗</h3><div class="kv" id="assetCard"><div>绛夊緟瀵煎叆銆?/div></div></div>
-        <div class="card"><h3>褰撳墠鍒ゆ柇</h3><div class="kv" id="currentJudgement"><div><b>鐘舵€?/b> 绛夊緟瀵煎叆</div><div><b>涓嬩竴姝?/b> 绮樿创鐖嗘閾炬帴</div></div></div>
-        <div class="card"><h3>妯″瀷鎺ュ彛</h3><div class="kv" id="modelCard"><div>绛夊緟妫€娴嬨€?/div></div></div>
-        <div class="card"><h3>Context / Plan</h3><div class="kv" id="planCard"><div>绛夊緟鐢熸垚涓婁笅鏂囥€?/div></div></div>
-        <div class="card"><h3>浜у搧鎵挎帴</h3><div class="kv" id="productCard"><div>绛夊緟浜у搧鍖归厤銆?/div></div></div>
-        <div class="card"><h3>椋炰功 / Loop</h3><div class="kv" id="handoffCard"><div><b>椋炰功</b> 寰呮鏌?/div><div><b>Loop</b> {{ external_loops_dir }}</div></div></div>
-        <div class="card"><h3>Loop 鎵ц</h3><div class="kv" id="loopJobCard"><div>绛夊緟鐢熸垚 Loop Job銆?/div></div></div>
+        <div class="card"><h3>当前素材</h3><div class="kv" id="assetCard"><div>等待导入。</div></div></div>
+        <div class="card"><h3>当前判断</h3><div class="kv" id="currentJudgement"><div><b>状态</b> 等待导入</div><div><b>下一步</b> 粘贴爆款链接</div></div></div>
+        <div class="card"><h3>模型接口</h3><div class="kv" id="modelCard"><div>等待检测。</div></div></div>
+        <div class="card"><h3>Context / Plan</h3><div class="kv" id="planCard"><div>等待生成上下文。</div></div></div>
+        <div class="card"><h3>产品承接</h3><div class="kv" id="productCard"><div>等待产品匹配。</div></div></div>
+        <div class="card"><h3>飞书 / Loop</h3><div class="kv" id="handoffCard"><div><b>飞书</b> 待检查</div><div><b>Loop</b> {{ external_loops_dir }}</div></div></div>
+        <div class="card"><h3>Loop 执行</h3><div class="kv" id="loopJobCard"><div>等待生成 Loop Job。</div></div></div>
       </div>
     </aside>
   </main>
 
 <script>
 const $=id=>document.getElementById(id);
-const paneNames={importPane:'鐖嗘瀵煎叆',assetPane:'绱犳潗鐞嗚В',analysisPane:'鍙嶆帹鍒嗘瀽',productPane:'浜у搧鎵挎帴',scriptPane:'鑴氭湰鐢熶骇',reviewPane:'澶嶇洏杩涘寲',discoveryPane:'閫夐鍙戠幇',batchPane:'鎵归噺瀵煎叆',knowledgePane:'鐭ヨ瘑搴?,agentPane:'Agent OS',configPane:'閰嶇疆涓績'};
+const paneNames={importPane:'爆款导入',assetPane:'素材理解',analysisPane:'反推分析',productPane:'产品承接',scriptPane:'脚本生产',reviewPane:'复盘进化',discoveryPane:'选题发现',batchPane:'批量导入',knowledgePane:'知识库',agentPane:'Agent OS',configPane:'配置中心'};
 const providerDefaults={deepseek:{url:'https://api.deepseek.com/v1',model:'deepseek-chat'},openai:{url:'https://api.openai.com/v1',model:'gpt-4.1-mini'}};
 const state={analysis:'',productMatch:'',filePath:'',candidates:[],selected:null,paths:{},feishu:null,model:null,os:null,loopJobs:[],imports:[],agentRun:null};
 function gotoPane(view){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view));$('paneTitle').textContent=paneNames[view]||''}
 function text(id,value){$(id).textContent=value||''}function setBusy(btn,busy){btn.disabled=busy}function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function metricsText(){return[`鍙戝竷鏃堕棿/澶囨敞: ${$('publishMeta').value.trim()}`,`鎾斁: ${$('metricViews').value.trim()}`,`鐐硅禐: ${$('metricLikes').value.trim()}`,`璇勮: ${$('metricComments').value.trim()}`,`鏀惰棌: ${$('metricSaves').value.trim()}`,`杞彂: ${$('metricShares').value.trim()}`,`瀹屾挱/杞寲: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n')}
-function values(){const product=$('productIntent').value.trim();const notes=[$('notes').value.trim(),product?`鎵挎帴浜у搧/浜у搧鏂瑰悜: ${product}`:''].filter(Boolean).join('\n');return{title:$('title').value.trim(),platform:$('platform').value.trim(),url:$('url').value.trim(),metrics:metricsText(),sales:$('sales').value.trim(),reason:$('reason').value.trim(),transcript:$('transcript').value.trim(),comments:$('comments').value.trim(),notes,file_path:state.filePath}}
-function pathsText(paths,feishu){const lines=[];const walk=(p,o)=>Object.entries(o||{}).forEach(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v)?walk(`${p}${k}.`,v):lines.push(`${p}${k}: ${Array.isArray(v)?v.join(', '):(v||'')}`));lines.push('鏈湴 / Obsidian / Loop 璺緞');walk('',paths||{});lines.push('','椋炰功鐘舵€?);walk('feishu.',feishu||{});return lines.join('\n')}
+function metricsText(){return[`发布时间/备注: ${$('publishMeta').value.trim()}`,`播放: ${$('metricViews').value.trim()}`,`点赞: ${$('metricLikes').value.trim()}`,`评论: ${$('metricComments').value.trim()}`,`收藏: ${$('metricSaves').value.trim()}`,`转发: ${$('metricShares').value.trim()}`,`完播/转化: ${$('metricConversion').value.trim()}`].filter(x=>!x.endsWith(': ')).join('\n')}
+function values(){const product=$('productIntent').value.trim();const notes=[$('notes').value.trim(),product?`承接产品/产品方向: ${product}`:''].filter(Boolean).join('\n');return{title:$('title').value.trim(),platform:$('platform').value.trim(),url:$('url').value.trim(),metrics:metricsText(),sales:$('sales').value.trim(),reason:$('reason').value.trim(),transcript:$('transcript').value.trim(),comments:$('comments').value.trim(),notes,file_path:state.filePath}}
+function pathsText(paths,feishu){const lines=[];const walk=(p,o)=>Object.entries(o||{}).forEach(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v)?walk(`${p}${k}.`,v):lines.push(`${p}${k}: ${Array.isArray(v)?v.join(', '):(v||'')}`));lines.push('本地 / Obsidian / Loop 路径');walk('',paths||{});lines.push('','飞书状态');walk('feishu.',feishu||{});return lines.join('\n')}
 function extractSection(md,heading){const i=(md||'').indexOf(heading);if(i<0)return'';const rest=md.slice(i);const m=rest.slice(heading.length).match(/\n##\s+\d+\./);return(m?rest.slice(0,heading.length+m.index):rest).trim()}
-function updateEndpointPreview(){const url=$('cfgApiUrl')?.value||'';if(!$('endpointPreview'))return;try{const u=new URL(url.replace(/\/$/,''));let path=u.pathname.replace(/\/$/,'');if(path.toLowerCase().endsWith('/chat/completions')){}else if(path.toLowerCase().endsWith('/v1'))path+='/chat/completions';else path='/v1/chat/completions';u.pathname=path;$('endpointPreview').textContent=u.toString()}catch{$('endpointPreview').textContent=url?'URL 鏍煎紡涓嶅畬鏁达紝鍚庣浼氭寜鍘熸牱灏濊瘯':'绛夊緟閰嶇疆'}}
-function updateCards(){$('assetCard').innerHTML=`<div><b>鏍囬</b> ${escapeHtml($('title').value||'鏈洖濉?)}</div><div><b>閾炬帴</b> ${escapeHtml($('url').value||'鏈洖濉?)}</div><div><b>鏈湴瑙嗛</b> ${escapeHtml(state.filePath||'鏈笅杞?鏈笂浼?)}</div><div><b>瀵煎叆缁撴灉</b> ${state.imports.length} 鏉?/div>`;$('currentJudgement').innerHTML=`<div><b>鐘舵€?/b> ${state.analysis?'宸插畬鎴愬垎鏋?:state.imports.length?'宸插鍏ョ礌鏉?:'绛夊緟瀵煎叆'}</div><div><b>鍊欓€?/b> ${state.candidates.length} 鏉?/div><div><b>閫変腑</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'鏈€変腑'}</div>`;$('modelCard').innerHTML=state.model?`<div><b>渚涘簲鍟?/b> ${escapeHtml(state.model.provider||'鏈煡')}</div><div><b>妯″瀷</b> ${escapeHtml(state.model.model||'鏈厤缃?)}</div><div><b>鎺ュ彛</b> ${escapeHtml(state.model.normalized_url||'')}</div><div><b>Key</b> ${state.model.configured?'宸查厤缃?:'鏈厤缃?}</div>`:'<div>绛夊緟妫€娴嬨€?/div>';$('planCard').innerHTML=state.os?`<div><b>绛栫暐</b> ${escapeHtml(state.os.plan?.strategy||'')}</div><div><b>Hook</b> ${escapeHtml(state.os.plan?.hook||'')}</div><div><b>鏃堕暱</b> ${escapeHtml(state.os.plan?.duration||'')}</div><div><b>娌夋穩</b> ${escapeHtml(state.os.memory_event||'')}</div>`:'<div>绛夊緟鐢熸垚涓婁笅鏂囥€?/div>';const product=extractSection(state.productMatch,'## 2.');$('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>绛夊緟浜у搧鍖归厤銆?/div>';$('handoffCard').innerHTML=`<div><b>椋炰功</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'寰呮鏌?}</div><div><b>閾炬帴</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">鎵撳紑椋炰功</a>`:'鏈敓鎴?}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>鍚屾</b> ${state.paths.external_xlsx?'宸插悓姝ュ閮?loops':'绛夊緟鐢熸垚'}</div>`;const latest=state.loopJobs[0];$('loopJobCard').innerHTML=latest?`<div><b>Job</b> ${escapeHtml(latest.job_id)}</div><div><b>鐘舵€?/b> ${escapeHtml(latest.status)}</div><div><b>鏍囬</b> ${escapeHtml(latest.title)}</div><div><b>璺緞</b> ${escapeHtml(latest.job_path)}</div>`:'<div>绛夊緟鐢熸垚 Loop Job銆?/div>'}
-async function refreshModelStatus(){const r=await fetch('/api/model/status');const j=await r.json();state.model=j;$('apiStatus').textContent=j.configured?'妯″瀷鎺ュ彛宸查厤缃?:'妯″瀷鎺ュ彛鏈厤缃?;$('apiStatus').className=`chip ${j.configured?'status-good':'status-bad'}`;$('modelStatus').textContent=j.model?`${j.provider}: ${j.model}`:'妯″瀷鏈厤缃?;updateCards();return j}
-async function refreshStatus(){const[cloud]=await Promise.all([fetch('/api/cloud/status').then(r=>r.json()),refreshModelStatus()]);$('obsidianStatus').textContent=cloud.obsidian?.mode==='plugin'?'Obsidian 鎻掍欢':'Obsidian 鏂囦欢';$('notesCliStatus').textContent=cloud.notes_cli?.ok?'绗旇 CLI 鍙敤':'绗旇 URI 妯″紡';$('feishuStatus').textContent=cloud.feishu?.ok?'椋炰功鍙敤':'椋炰功寰呭鐞?;state.feishu=cloud.feishu;updateCards();return cloud}
+function updateEndpointPreview(){const url=$('cfgApiUrl')?.value||'';if(!$('endpointPreview'))return;try{const u=new URL(url.replace(/\/$/,''));let path=u.pathname.replace(/\/$/,'');if(path.toLowerCase().endsWith('/chat/completions')){}else if(path.toLowerCase().endsWith('/v1'))path+='/chat/completions';else path='/v1/chat/completions';u.pathname=path;$('endpointPreview').textContent=u.toString()}catch{$('endpointPreview').textContent=url?'URL 格式不完整，后端会按原样尝试':'等待配置'}}
+function updateCards(){$('assetCard').innerHTML=`<div><b>标题</b> ${escapeHtml($('title').value||'未回填')}</div><div><b>链接</b> ${escapeHtml($('url').value||'未回填')}</div><div><b>本地视频</b> ${escapeHtml(state.filePath||'未下载/未上传')}</div><div><b>导入结果</b> ${state.imports.length} 条</div>`;$('currentJudgement').innerHTML=`<div><b>状态</b> ${state.analysis?'已完成分析':state.imports.length?'已导入素材':'等待导入'}</div><div><b>候选</b> ${state.candidates.length} 条</div><div><b>选中</b> ${state.selected?`${state.selected.id} ${state.selected.style}`:'未选中'}</div>`;$('modelCard').innerHTML=state.model?`<div><b>供应商</b> ${escapeHtml(state.model.provider||'未知')}</div><div><b>模型</b> ${escapeHtml(state.model.model||'未配置')}</div><div><b>接口</b> ${escapeHtml(state.model.normalized_url||'')}</div><div><b>Key</b> ${state.model.configured?'已配置':'未配置'}</div>`:'<div>等待检测。</div>';$('planCard').innerHTML=state.os?`<div><b>策略</b> ${escapeHtml(state.os.plan?.strategy||'')}</div><div><b>Hook</b> ${escapeHtml(state.os.plan?.hook||'')}</div><div><b>时长</b> ${escapeHtml(state.os.plan?.duration||'')}</div><div><b>沉淀</b> ${escapeHtml(state.os.memory_event||'')}</div>`:'<div>等待生成上下文。</div>';const product=extractSection(state.productMatch,'## 2.');$('productCard').innerHTML=product?product.split('\n').slice(0,8).map(x=>`<div>${escapeHtml(x)}</div>`).join(''):'<div>等待产品匹配。</div>';$('handoffCard').innerHTML=`<div><b>飞书</b> ${state.feishu?escapeHtml(state.feishu.message||state.feishu.mode||''):'待检查'}</div><div><b>链接</b> ${state.feishu?.url?`<a href="${state.feishu.url}" target="_blank">打开飞书</a>`:'未生成'}</div><div><b>Loop</b> {{ external_loops_dir }}</div><div><b>同步</b> ${state.paths.external_xlsx?'已同步外部 loops':'等待生成'}</div>`;const latest=state.loopJobs[0];$('loopJobCard').innerHTML=latest?`<div><b>Job</b> ${escapeHtml(latest.job_id)}</div><div><b>状态</b> ${escapeHtml(latest.status)}</div><div><b>标题</b> ${escapeHtml(latest.title)}</div><div><b>路径</b> ${escapeHtml(latest.job_path)}</div>`:'<div>等待生成 Loop Job。</div>'}
+async function refreshModelStatus(){const r=await fetch('/api/model/status');const j=await r.json();state.model=j;$('apiStatus').textContent=j.configured?'模型接口已配置':'模型接口未配置';$('apiStatus').className=`chip ${j.configured?'status-good':'status-bad'}`;$('modelStatus').textContent=j.model?`${j.provider}: ${j.model}`:'模型未配置';updateCards();return j}
+async function refreshStatus(){const[cloud]=await Promise.all([fetch('/api/cloud/status').then(r=>r.json()),refreshModelStatus()]);$('obsidianStatus').textContent=cloud.obsidian?.mode==='plugin'?'Obsidian 插件':'Obsidian 文件';$('notesCliStatus').textContent=cloud.notes_cli?.ok?'笔记 CLI 可用':'笔记 URI 模式';$('feishuStatus').textContent=cloud.feishu?.ok?'飞书可用':'飞书待处理';state.feishu=cloud.feishu;updateCards();return cloud}
 async function refreshLoopJobs(){const r=await fetch('/api/loops/jobs');const j=await r.json();state.loopJobs=j.jobs||[];updateCards();return j}
-async function loadConfig(){const[cfg,model]=await Promise.all([fetch('/api/config').then(r=>r.json()),refreshModelStatus()]);const c=cfg.config||{};$('cfgApiUrl').value=c.api_url||model.api_url||'';$('cfgApiModel').value=c.api_model||model.model||'';$('cfgApiKey').value=c.api_key||'';$('cfgFeishuCli').value=c.feishu_cli||'';$('cfgLoopsDir').value=c.external_loops_dir||'';$('cfgProductKb').value=c.product_kb_dir||'';$('cfgObsidianDir').value=c.obsidian_vault_dir||'';$('cfgNotesCli').value=c.notes_cli||'';$('cfgObsidianKey').value=c.obsidian_api_key||'';updateEndpointPreview();text('configOutput',`閰嶇疆鏂囦欢锛?{cfg.path}\n褰撳墠妯″瀷鎺ュ彛锛?{model.normalized_url||''}`)}
+async function loadConfig(){const[cfg,model]=await Promise.all([fetch('/api/config').then(r=>r.json()),refreshModelStatus()]);const c=cfg.config||{};$('cfgApiUrl').value=c.api_url||model.api_url||'';$('cfgApiModel').value=c.api_model||model.model||'';$('cfgApiKey').value=c.api_key||'';$('cfgFeishuCli').value=c.feishu_cli||'';$('cfgLoopsDir').value=c.external_loops_dir||'';$('cfgProductKb').value=c.product_kb_dir||'';$('cfgObsidianDir').value=c.obsidian_vault_dir||'';$('cfgNotesCli').value=c.notes_cli||'';$('cfgObsidianKey').value=c.obsidian_api_key||'';updateEndpointPreview();text('configOutput',`配置文件：${cfg.path}\n当前模型接口：${model.normalized_url||''}`)}
 async function saveConfig(){const body={api_url:$('cfgApiUrl').value,api_model:$('cfgApiModel').value,api_key:$('cfgApiKey').value,feishu_cli:$('cfgFeishuCli').value,external_loops_dir:$('cfgLoopsDir').value,product_kb_dir:$('cfgProductKb').value,obsidian_vault_dir:$('cfgObsidianDir').value,notes_cli:$('cfgNotesCli').value,obsidian_api_key:$('cfgObsidianKey').value};const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();await refreshModelStatus();text('configOutput',JSON.stringify(j,null,2));await refreshStatus()}
-async function runAnalyze(){const fd=new FormData();Object.entries(values()).forEach(([k,v])=>fd.append(k,v));if($('file').files[0])fd.append('file',$('file').files[0]);const res=await fetch('/api/analyze',{method:'POST',body:fd});const j=await res.json();if(!j.ok)throw new Error(j.error||'鍒嗘瀽澶辫触');state.analysis=j.analysis||'';state.productMatch=j.product_match||'';state.filePath=j.file_path||state.filePath;state.paths=j.paths||{};state.feishu=j.feishu;if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript;text('analysisView',state.analysis);text('matchView',state.productMatch);text('pathsView',pathsText(j.paths,j.feishu));await runContextPlan();updateCards();gotoPane('analysisPane')}
-async function runContextPlan(){const res=await fetch('/api/os/context',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(j.ok){state.os=j;text('contextView',JSON.stringify({context:j.context,comment_insight:j.comment_insight,plan:j.plan,memory_event:j.memory_event},null,2));updateCards()}}
-async function runCandidates(){const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'鍊欓€夌敓鎴愬け璐?);state.candidates=j.candidates?.candidates||[];state.paths=j.paths||{};state.feishu=j.feishu;renderCandidates();text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane')}
-async function runScript(){const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'鑴氭湰鐢熸垚澶辫触');state.paths=j.paths||{};state.feishu=j.feishu;text('scriptView',j.script||'');text('pathsView',pathsText(j.paths,j.feishu));await refreshLoopJobs();updateCards();gotoPane('scriptPane')}
-function renderCandidates(){$('candidateCards').innerHTML=state.candidates.length?state.candidates.map((c,i)=>`<div class="candidate"><div class="candidate-title">${escapeHtml(c.id||`C${i+1}`)} | ${escapeHtml(c.style||'')} | ${escapeHtml(c.title||'')}</div><div class="candidate-meta">Hook锛?{escapeHtml(c.hook||'')}</div><div class="candidate-meta">浜у搧锛?{escapeHtml(c.product||'')}</div><div class="candidate-meta">鐞嗙敱锛?{escapeHtml(c.reason_to_pick||'')}</div><div class="candidate-meta">椋庨櫓锛?{escapeHtml(c.risk_note||'')}</div><div class="candidate-actions"><button onclick="selectCandidate(${i})">閫変腑</button><button class="primary" onclick="exportCandidateLoopAgent(${i})">鐢熸垚 Loop / 鎺ㄩ涔?/button></div></div>`).join(''):'<div class="note">杩樻病鏈夊€欓€夈€傚厛璺戔€滃嚭鍊欓€夆€濄€?/div>'}
+async function runAnalyze(){const fd=new FormData();Object.entries(values()).forEach(([k,v])=>fd.append(k,v));if($('file').files[0])fd.append('file',$('file').files[0]);const res=await fetch('/api/analyze',{method:'POST',body:fd});const j=await res.json();if(!j.ok)throw new Error(j.error||'分析失败');state.analysis=j.analysis||'';state.productMatch=j.product_match||'';state.filePath=j.file_path||state.filePath;state.paths=j.paths||{};state.feishu=j.feishu;if(j.video_package?.transcript&&!$('transcript').value.trim())$('transcript').value=j.video_package.transcript;text('analysisView',state.analysis);text('matchView',state.productMatch);text('pathsView',pathsText(j.paths,j.feishu));await runContextPlan();updateCards();gotoPane('analysisPane');return j}
+async function runContextPlan(){const res=await fetch('/api/os/context',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(j.ok){state.os=j;text('contextView',JSON.stringify({context:j.context,comment_insight:j.comment_insight,plan:j.plan,memory_event:j.memory_event},null,2));updateCards()}return j}
+async function runCandidates(){const res=await fetch('/api/candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'候选生成失败');state.candidates=j.candidates?.candidates||[];state.paths=j.paths||{};state.feishu=j.feishu;renderCandidates();text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane');return j}
+async function runScript(){const res=await fetch('/api/generate-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values(),analysis:state.analysis,product_match:state.productMatch,script_goal:$('scriptGoal').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'脚本生成失败');state.paths=j.paths||{};state.feishu=j.feishu;text('scriptView',j.script||'');text('pathsView',pathsText(j.paths,j.feishu));await refreshLoopJobs();updateCards();gotoPane('scriptPane');return j}
+function renderCandidates(){$('candidateCards').innerHTML=state.candidates.length?state.candidates.map((c,i)=>`<div class="candidate"><div class="candidate-title">${escapeHtml(c.id||`C${i+1}`)} | ${escapeHtml(c.style||'')} | ${escapeHtml(c.title||'')}</div><div class="candidate-meta">Hook：${escapeHtml(c.hook||'')}</div><div class="candidate-meta">产品：${escapeHtml(c.product||'')}</div><div class="candidate-meta">理由：${escapeHtml(c.reason_to_pick||'')}</div><div class="candidate-meta">风险：${escapeHtml(c.risk_note||'')}</div><div class="candidate-actions"><button onclick="selectCandidate(${i})">选中</button><button class="primary" onclick="exportCandidateLoopAgent(${i})">生成 Loop / 推飞书</button></div></div>`).join(''):'<div class="note">还没有候选。先跑“出候选”。</div>'}
 window.selectCandidate=function(i){state.selected=state.candidates[i];$('candidateId').value=`${state.selected.id||''} / ${state.selected.style||''}`;$('feedbackProduct').value=state.selected.product||'';renderCandidates();updateCards()}
-window.exportCandidateLoopRaw=async function(i){state.selected=state.candidates[i];const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})});const j=await res.json();if(!j.ok)throw new Error(j.error||'Loop 鐢熸垚澶辫触');state.paths=j.paths||{};state.feishu=j.feishu;await refreshLoopJobs();text('scriptView',`宸查€変腑锛?{state.selected.id} ${state.selected.title}\n\n鍙ｆ挱绋匡細\n${state.selected.oral_script||''}\n\nLoop / 椋炰功锛歕n${pathsText(j.paths,j.feishu)}`);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane')}
-async function runFeedback(){const[candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim());const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('feedbackComments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),sales:$('sales').value.trim(),notes:$('feedbackNotes').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'澶嶇洏澶辫触');state.paths=j.paths||{};state.feishu=j.feishu;const learning=j.learning?`\n\n## Evaluation / Evolution\n${JSON.stringify(j.learning,null,2)}`:'';text('reviewView',(j.review||'')+learning);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('reviewPane')}
-async function postImport(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||'瀵煎叆澶辫触');return j}
-function renderImports(j){state.imports=j.videos||j.result?.videos||[];const out=j.out_dir||j.result?.out_dir||'';$('importCards').innerHTML=state.imports.length?state.imports.map((v,i)=>`<div class="candidate"><div class="candidate-title">${i+1}. ${escapeHtml(v.platform||'')} | ${escapeHtml(v.title||v.desc||'')}</div><div class="candidate-meta">鐐硅禐 ${escapeHtml(v.like_count||0)} / 璇勮 ${escapeHtml(v.comment_count||0)} / 鏀惰棌 ${escapeHtml(v.collect_count||0)} / 杞彂 ${escapeHtml(v.share_count||0)}</div><div class="candidate-meta">${escapeHtml(v.page_url||v.video_url||'')}</div><div class="candidate-meta">鏈湴瑙嗛锛?{escapeHtml(v.file_path||'鏈笅杞?)}</div><div class="candidate-meta">褰掓。锛?{escapeHtml(v.archive_dir||'')}</div><div class="candidate-actions"><button class="primary" onclick="useImport(${i})">鍥炲～鍒颁换鍔?/button></div></div>`).join(''):`<div class="note">娌℃湁瀵煎叆缁撴灉銆?{escapeHtml(j.status||'')}</div>`;text('pathsView',`瀵煎叆鐩綍锛?{out}\n\n${JSON.stringify(j,null,2)}`);updateCards()}
-window.useImport=async function(i){const record=state.imports[i]||{};const j=await postImport('/api/import/form-data',{record});const f=j.form||{};$('title').value=f.title||$('title').value;$('platform').value=f.platform||$('platform').value;$('url').value=f.url||$('url').value;$('sales').value=f.sales||$('sales').value;state.filePath=f.file_path||state.filePath;const metrics=(f.metrics||'').split('\n');for(const line of metrics){const[k,...rest]=line.split(':');const v=rest.join(':').trim();if(k.includes('鎾斁'))$('metricViews').value=v;if(k.includes('鐐硅禐'))$('metricLikes').value=v;if(k.includes('璇勮'))$('metricComments').value=v;if(k.includes('鏀惰棌'))$('metricSaves').value=v;if(k.includes('杞彂'))$('metricShares').value=v;if(k.includes('鏃堕暱'))$('metricConversion').value=($('metricConversion').value?$('metricConversion').value+' / ':'')+v}$('notes').value=[$('notes').value,f.notes].filter(Boolean).join('\n');text('pathsView',`宸插洖濉細${f.title||''}\n瑙嗛璺緞锛?{f.file_path||'鏈笅杞藉埌鏈湴瑙嗛锛岄渶瑕佷笂浼犺棰戞墠鑳芥繁搴﹀弽鎺?}`);updateCards();gotoPane('assetPane')}
+window.exportCandidateLoopRaw=async function(i){state.selected=state.candidates[i];const res=await fetch('/api/candidate-loop',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:state.selected.title||$('title').value.trim(),candidate:state.selected})});const j=await res.json();if(!j.ok)throw new Error(j.error||'Loop 生成失败');state.paths=j.paths||{};state.feishu=j.feishu;await refreshLoopJobs();text('scriptView',`已选中：${state.selected.id} ${state.selected.title}\n\n口播稿：\n${state.selected.oral_script||''}\n\nLoop / 飞书：\n${pathsText(j.paths,j.feishu)}`);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('scriptPane');return j}
+async function runFeedback(){const[candidate_id,style]=$('candidateId').value.split('/').map(x=>(x||'').trim());const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:$('title').value.trim(),platform:$('platform').value.trim(),video_url:$('videoUrl').value.trim(),candidate_id,style,product:$('feedbackProduct').value.trim(),template:state.selected?.style||'',audience:state.selected?.audience||'',views:$('views').value.trim(),likes:$('likes').value.trim(),comments:$('feedbackComments').value.trim(),saves:$('saves').value.trim(),shares:$('shares').value.trim(),completion_rate:$('completionRate').value.trim(),conversion:$('conversion').value.trim(),sales:$('sales').value.trim(),notes:$('feedbackNotes').value.trim()})});const j=await res.json();if(!j.ok)throw new Error(j.error||'复盘失败');state.paths=j.paths||{};state.feishu=j.feishu;const learning=j.learning?`\n\n## Evaluation / Evolution\n${JSON.stringify(j.learning,null,2)}`:'';text('reviewView',(j.review||'')+learning);text('pathsView',pathsText(j.paths,j.feishu));updateCards();gotoPane('reviewPane');return j}
+async function postImport(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||'导入失败');return j}
+function renderImports(j){state.imports=j.videos||j.result?.videos||[];const out=j.out_dir||j.result?.out_dir||'';$('importCards').innerHTML=state.imports.length?state.imports.map((v,i)=>`<div class="candidate"><div class="candidate-title">${i+1}. ${escapeHtml(v.platform||'')} | ${escapeHtml(v.title||v.desc||'')}</div><div class="candidate-meta">点赞 ${escapeHtml(v.like_count||0)} / 评论 ${escapeHtml(v.comment_count||0)} / 收藏 ${escapeHtml(v.collect_count||0)} / 转发 ${escapeHtml(v.share_count||0)}</div><div class="candidate-meta">${escapeHtml(v.page_url||v.video_url||'')}</div><div class="candidate-meta">本地视频：${escapeHtml(v.file_path||'未下载')}</div><div class="candidate-meta">归档：${escapeHtml(v.archive_dir||'')}</div><div class="candidate-actions"><button class="primary" onclick="useImport(${i})">回填到任务</button></div></div>`).join(''):`<div class="note">没有导入结果。${escapeHtml(j.status||'')}</div>`;text('pathsView',`导入目录：${out}\n\n${JSON.stringify(j,null,2)}`);updateCards()}
+window.useImport=async function(i){const record=state.imports[i]||{};const j=await postImport('/api/import/form-data',{record});const f=j.form||{};$('title').value=f.title||$('title').value;$('platform').value=f.platform||$('platform').value;$('url').value=f.url||$('url').value;$('sales').value=f.sales||$('sales').value;state.filePath=f.file_path||state.filePath;const metrics=(f.metrics||'').split('\n');for(const line of metrics){const[k,...rest]=line.split(':');const v=rest.join(':').trim();if(k.includes('播放'))$('metricViews').value=v;if(k.includes('点赞'))$('metricLikes').value=v;if(k.includes('评论'))$('metricComments').value=v;if(k.includes('收藏'))$('metricSaves').value=v;if(k.includes('转发'))$('metricShares').value=v;if(k.includes('时长'))$('metricConversion').value=($('metricConversion').value?$('metricConversion').value+' / ':'')+v}$('notes').value=[$('notes').value,f.notes].filter(Boolean).join('\n');text('pathsView',`已回填：${f.title||''}\n视频路径：${f.file_path||'未下载到本地视频，需要上传视频才能深度反推'}`);updateCards();gotoPane('assetPane')}
 async function runImportBrowser(){renderImports(await postImport('/api/import/browser-text',{raw:$('batchRaw').value||$('importRaw').value}))}async function runImportLinks(){renderImports(await postImport('/api/import/links',{raw:$('importRaw').value}))}async function runBatchLinks(){renderImports(await postImport('/api/import/links',{raw:$('batchRaw').value}))}async function runImportTable(){renderImports(await postImport('/api/import/table',{table_path:$('importTablePath').value.trim()}))}
-async function runDouyinSearch(){const start=await postImport('/api/import/douyin-search',{keyword:$('importKeyword').value.trim(),max_count:Number($('importCount').value||10)});text('pathsView',start.message||'閲囬泦宸插紑濮?);gotoPane('configPane');const job=start.job_id;for(let i=0;i<180;i++){await new Promise(r=>setTimeout(r,2000));const r=await fetch('/api/import/status/'+encodeURIComponent(job));const j=await r.json();if(j.status==='done'){renderImports(j.result||{});gotoPane('importPane');return}if((j.status||'').startsWith('error:'))throw new Error(j.status);text('pathsView',`閲囬泦鐘舵€侊細${j.status}`)}throw new Error('閲囬泦瓒呮椂锛岃鏌ョ湅鎶栭煶绐楀彛鎴栫◢鍚庢煡璇㈢姸鎬?)}
-function agentIntent(){return{raw:$('importRaw').value.trim(),title:$('title').value.trim(),platform:$('platform').value.trim(),url:$('url').value.trim(),file_path:state.filePath,comments:$('comments').value.trim(),product:$('productIntent').value.trim(),sales:$('sales').value.trim(),goal:$('scriptGoal').value.trim(),styles:['鐚庡','鍙嶅樊','鍙嶅弽宸?,'鍏遍福','鐢熸椿浠紡']}}
-function renderAgentRun(run){state.agentRun=run;const nodes=run.nodes||[];$('agentGraph').innerHTML=nodes.map(node=>{const skills=(node.skills_used||[]).map(s=>`${escapeHtml(s.zh_name)} ${Math.round((s.confidence||0)*100)}%`).join(' / ')||'鏈懡涓?;return`<div class="candidate"><div class="candidate-title">${escapeHtml(node.title)} | ${escapeHtml(node.agent)} | ${escapeHtml(node.status)}</div><div class="candidate-meta">闆嗙兢锛?{escapeHtml(node.cluster)}</div><div class="candidate-meta">Skill锛?{skills}</div><div class="candidate-meta">杈撳叆锛?{escapeHtml(JSON.stringify(node.inputs||{}))}</div></div>`}).join('')||'<div class="note">杩樻病鏈?Agent Run銆?/div>';text('agentLog',JSON.stringify({run_id:run.run_id,status:run.status,edges:run.edges,events:run.events||[]},null,2));gotoPane('agentPane')}
+async function runDouyinSearch(){const start=await postImport('/api/import/douyin-search',{keyword:$('importKeyword').value.trim(),max_count:Number($('importCount').value||10)});text('pathsView',start.message||'采集已开始');gotoPane('configPane');const job=start.job_id;for(let i=0;i<180;i++){await new Promise(r=>setTimeout(r,2000));const r=await fetch('/api/import/status/'+encodeURIComponent(job));const j=await r.json();if(j.status==='done'){renderImports(j.result||{});gotoPane('importPane');return j}if((j.status||'').startsWith('error:'))throw new Error(j.status);text('pathsView',`采集状态：${j.status}`)}throw new Error('采集超时，请查看抖音窗口或稍后查询状态')}
+function agentIntent(){return{raw:$('importRaw').value.trim(),title:$('title').value.trim(),platform:$('platform').value.trim(),url:$('url').value.trim(),file_path:state.filePath,comments:$('comments').value.trim(),product:$('productIntent').value.trim(),sales:$('sales').value.trim(),goal:$('scriptGoal').value.trim(),styles:['猎奇','反差','反反差','共鸣','生活仪式']}}
+function renderAgentRun(run){state.agentRun=run;const nodes=run.nodes||[];$('agentGraph').innerHTML=nodes.map(node=>{const skills=(node.skills_used||[]).map(s=>`${escapeHtml(s.zh_name)} ${Math.round((s.confidence||0)*100)}%`).join(' / ')||'未命中';return`<div class="candidate"><div class="candidate-title">${escapeHtml(node.title)} | ${escapeHtml(node.agent)} | ${escapeHtml(node.status)}</div><div class="candidate-meta">集群：${escapeHtml(node.cluster)}</div><div class="candidate-meta">Skill：${skills}</div><div class="candidate-meta">输入：${escapeHtml(JSON.stringify(node.inputs||{}))}</div></div>`}).join('')||'<div class="note">还没有 Agent Run。</div>';text('agentLog',JSON.stringify({run_id:run.run_id,status:run.status,edges:run.edges,events:run.events||[]},null,2));gotoPane('agentPane')}
 async function createAgentRun(){const r=await fetch('/api/agent/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({intent:agentIntent()})});renderAgentRun(await r.json())}
 async function refreshAgentRuns(){if(state.agentRun?.run_id){const r=await fetch('/api/agent/run/'+encodeURIComponent(state.agentRun.run_id));renderAgentRun(await r.json());return}const r=await fetch('/api/agent/runs');text('agentLog',JSON.stringify(await r.json(),null,2));gotoPane('agentPane')}
 async function showSkills(){const r=await fetch('/api/agent/skills');text('agentLog',JSON.stringify(await r.json(),null,2));gotoPane('agentPane')}
@@ -249,10 +252,9 @@ async function exportCandidateLoopAgent(i){return withAgentNode('loop',()=>windo
 async function runFeedbackAgent(){return withAgentNode('review',runFeedback,()=>({paths:state.paths||{},review_chars:($('reviewView').textContent||'').length}))}
 async function guard(fn,btn){setBusy(btn,true);try{await fn()}catch(e){text('pathsView',e.message);gotoPane('configPane')}finally{setBusy(btn,false)}}
 document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>{gotoPane(b.dataset.view);if(b.dataset.view==='configPane')loadConfig()}));$('cfgProvider').addEventListener('change',()=>{const d=providerDefaults[$('cfgProvider').value];if(d){$('cfgApiUrl').value=d.url;$('cfgApiModel').value=d.model;updateEndpointPreview()}});$('cfgApiUrl').addEventListener('input',updateEndpointPreview);
-$('saveConfigBtn').addEventListener('click',()=>guard(saveConfig,$('saveConfigBtn')));$('testConfigBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshStatus(),null,2))},$('testConfigBtn')));$('testApiBtn').addEventListener('click',()=>guard(async()=>{await saveConfig();const r=await fetch('/api/test-llm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'鍙洖澶嶏細OK'})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('testApiBtn')));$('modelStatusBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshModelStatus(),null,2))},$('modelStatusBtn')));$('routesBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/routes');text('configOutput',JSON.stringify(await r.json(),null,2))},$('routesBtn')));$('openVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/open-vault',{method:'POST'});text('configOutput',JSON.stringify(await r.json(),null,2))},$('openVaultBtn')));$('revealVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('revealVaultBtn')));
+$('saveConfigBtn').addEventListener('click',()=>guard(saveConfig,$('saveConfigBtn')));$('testConfigBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshStatus(),null,2))},$('testConfigBtn')));$('testApiBtn').addEventListener('click',()=>guard(async()=>{await saveConfig();const r=await fetch('/api/test-llm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'只回复：OK'})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('testApiBtn')));$('modelStatusBtn').addEventListener('click',()=>guard(async()=>{text('configOutput',JSON.stringify(await refreshModelStatus(),null,2))},$('modelStatusBtn')));$('routesBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/routes');text('configOutput',JSON.stringify(await r.json(),null,2))},$('routesBtn')));$('openVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/open-vault',{method:'POST'});text('configOutput',JSON.stringify(await r.json(),null,2))},$('openVaultBtn')));$('revealVaultBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});text('configOutput',JSON.stringify(await r.json(),null,2))},$('revealVaultBtn')));
 $('refreshStatusBtn').addEventListener('click',()=>guard(async()=>{await refreshStatus();await refreshLoopJobs()},$('refreshStatusBtn')));$('analyzeBtn').addEventListener('click',()=>guard(runAnalyzeAgent,$('analyzeBtn')));$('contextBtn').addEventListener('click',()=>guard(runContextPlanAgent,$('contextBtn')));$('candidateBtn').addEventListener('click',()=>guard(runCandidatesAgent,$('candidateBtn')));$('scriptBtn').addEventListener('click',()=>guard(runScriptAgent,$('scriptBtn')));$('feedbackBtn').addEventListener('click',()=>guard(runFeedbackAgent,$('feedbackBtn')));$('runAllBtn').addEventListener('click',()=>guard(async()=>{await runAnalyzeAgent();await runCandidatesAgent()},$('runAllBtn')));$('importBrowserBtn').addEventListener('click',()=>guard(runImportBrowserAgent,$('importBrowserBtn')));$('importLinksBtn').addEventListener('click',()=>guard(runImportLinksAgent,$('importLinksBtn')));$('batchLinksBtn').addEventListener('click',()=>guard(runBatchLinksAgent,$('batchLinksBtn')));$('importTableBtn').addEventListener('click',()=>guard(runImportTableAgent,$('importTableBtn')));$('douyinSearchBtn').addEventListener('click',()=>guard(runDouyinSearchAgent,$('douyinSearchBtn')));$('productLibraryBtn').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/product-library');text('knowledgeView',JSON.stringify(await r.json(),null,2));gotoPane('knowledgePane')},$('productLibraryBtn')));$('openVaultBtn2').addEventListener('click',()=>guard(async()=>{const r=await fetch('/api/notes-cli/open-vault',{method:'POST'});text('knowledgeView',JSON.stringify(await r.json(),null,2));gotoPane('knowledgePane')},$('openVaultBtn2')));$('createAgentRunBtn').addEventListener('click',()=>guard(createAgentRun,$('createAgentRunBtn')));$('refreshAgentRunsBtn').addEventListener('click',()=>guard(refreshAgentRuns,$('refreshAgentRunsBtn')));$('skillsBtn').addEventListener('click',()=>guard(showSkills,$('skillsBtn')));
 renderImports({videos:[]});refreshStatus().catch(()=>{});refreshLoopJobs().catch(()=>{});
 </script>
 </body>
 </html>
-
