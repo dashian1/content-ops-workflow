@@ -49,9 +49,15 @@
           <div class="component stack">
             <div class="component-title">导入这条爆款</div>
             <div><label>爆款链接 / 分享文本</label><textarea id="importRaw" placeholder="粘贴抖音、小红书、B站等分享文本。系统先建档，能抓到视频就回填本地路径。"></textarea></div>
-            <div class="actions"><button class="primary" id="importLinksBtn">粘贴链接建档</button><button id="importBrowserBtn">浏览器复制内容建档</button></div>
-            <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
-            <div class="actions"><button id="importTableBtn">导入表格</button></div>
+            <div class="actions"><button class="primary" id="importLinksBtn">导入这条爆款</button></div>
+            <details>
+              <summary>其他导入方式</summary>
+              <div class="details-body stack">
+                <div class="actions"><button id="importBrowserBtn">浏览器复制内容建档</button></div>
+                <div><label>表格路径</label><input id="importTablePath" placeholder="E:\...\素材清单.xlsx / .csv"></div>
+                <div class="actions"><button id="importTableBtn">导入表格</button></div>
+              </div>
+            </details>
             <details>
               <summary>批量找素材 / 抖音搜索</summary>
               <div class="details-body stack">
