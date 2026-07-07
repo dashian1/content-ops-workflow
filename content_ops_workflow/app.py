@@ -13,6 +13,8 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from content_ops_workflow import feishu, llm, notes_cli, obsidian
+from content_ops_workflow.agents import runtime as agent_runtime
+from content_ops_workflow.agents.skill_router import SKILLS
 from content_ops_workflow.engines import import_engine, loop_engine
 from content_ops_workflow import config as runtime_config
 from content_ops_workflow.config import SETTINGS, ensure_dirs
@@ -84,6 +86,28 @@ def create_app() -> Flask:
     @app.route("/api/model/status")
     def model_status():
         return jsonify(llm.status())
+
+    @app.route("/api/agent/runs")
+    def agent_runs():
+        return jsonify(agent_runtime.list_runs())
+
+    @app.route("/api/agent/run", methods=["POST"])
+    def agent_create_run():
+        data = request.json or {}
+        return jsonify(agent_runtime.create_run(data.get("intent") or data))
+
+    @app.route("/api/agent/run/<run_id>")
+    def agent_get_run(run_id):
+        return jsonify(agent_runtime.get_run(run_id))
+
+    @app.route("/api/agent/run/<run_id>/node/<node_id>", methods=["POST"])
+    def agent_update_node(run_id, node_id):
+        data = request.json or {}
+        return jsonify(agent_runtime.update_node(run_id, node_id, data.get("status", "done"), data.get("outputs") or {}, data.get("error", "")))
+
+    @app.route("/api/agent/skills")
+    def agent_skills():
+        return jsonify({"ok": True, "skills": [skill.__dict__ for skill in SKILLS]})
 
     @app.route("/api/test-llm", methods=["POST"])
     def test_llm():
