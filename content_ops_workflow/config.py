@@ -90,7 +90,7 @@ def load_settings() -> Settings:
         obsidian_rest_url=cfg(data, "OBSIDIAN_REST_URL", "obsidian_rest_url", "https://127.0.0.1:27124"),
         obsidian_api_key=cfg(data, "OBSIDIAN_API_KEY", "obsidian_api_key", ""),
         obsidian_open_after_write=os.environ.get("OBSIDIAN_OPEN_AFTER_WRITE", "").strip() == "1",
-        product_kb_dir=cfg(data, "PRODUCT_KB_DIR", "product_kb_dir", os.path.join(os.path.dirname(ROOT), "灵鹤芝谷工具矩阵", "knowledge")),
+        product_kb_dir=cfg(data, "PRODUCT_KB_DIR", "product_kb_dir", os.path.join(os.path.dirname(ROOT), "大师安工具矩阵", "knowledge")),
         api_url=cfg(data, "API_URL", "api_url", "https://api.deepseek.com/v1"),
         api_key=os.environ.get("API_KEY") or os.environ.get("DS_KEY") or str(data.get("api_key") or ""),
         model=cfg(data, "API_MODEL", "api_model", "deepseek-chat"),
