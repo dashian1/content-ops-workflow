@@ -11,7 +11,7 @@ from typing import Any
 from content_ops_workflow.config import SETTINGS
 
 
-DEFAULT_LARK_CLI = r"C:\Users\gba\.workbuddy\binaries\node\versions\22.22.2\lark-cli.cmd"
+DEFAULT_LARK_CLI = r"%USERPROFILE%\.workbuddy\binaries\node\versions\22.22.2\lark-cli.cmd"
 
 TABLES = {
     "analysis": "爆款分析",
